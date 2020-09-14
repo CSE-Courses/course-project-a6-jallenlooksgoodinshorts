@@ -1,0 +1,12 @@
+{
+   "name": "442_Project",
+   "version": "1.0.0",
+   "author": "Team JAllenLooksGoodInShorts",
+   "main": "server.js",
+   "scripts": {
+      "start": "node server.js"
+   },
+   "dependencies": {
+      "express": "^4.16.1"
+   }
+}

@@ -15,3 +15,21 @@ app.get('/test1', (req, res) => {
 //Listenting on port 4000
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
+
+app.get('/', (req, res) => {
+  res.send('Replace with home screen');
+});
+
+
+app.get('/home', (req, res) => {
+  res.send('Replace with home screen');
+});
+
+app.get('/login', (req, res) => {
+  res.send('Replace with login screen');
+});
+
+app.get('/register', (req, res) => {
+  res.send('Replace with registration screen');
+});
+

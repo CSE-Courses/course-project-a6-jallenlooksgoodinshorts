@@ -6,8 +6,8 @@ WORKDIR /
 # Installing dependencies
 COPY package*.json ./
 
-RUN npm install
 RUN npm install mysql
+RUN npm install
 
 #Bundling Source
 COPY . .

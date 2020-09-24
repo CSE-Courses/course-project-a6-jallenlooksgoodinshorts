@@ -22,8 +22,14 @@ function sendJSON(json) {
     xml.setRequestHeader("Content-Type", "application/json");
     xml.onreadystatechange = function () {
         if (xml.readyState === 4 && xml.status === 200){
-            console.log(JSON.parse(xml.responseText)); //JUST A TEST, NEEDS TO BE DELETED IN IMPLEMENTATION
+            console.log(JSON.parse(xml.responseText)["data"]); //JUST A TEST, NEEDS TO BE DELETED IN IMPLEMENTATION
             //HERE IS WHERE WE REACT TO THE SERVERS MESSAGE
+            data = JSON.parse(xml.responseText)["data"];
+            if (data === json){
+                window.location.replace("ConfirmLogin\\LoginConfirmed.html");
+            }else{
+                alert("Login Failed");
+            }
         }
     };
     xml.send(json);

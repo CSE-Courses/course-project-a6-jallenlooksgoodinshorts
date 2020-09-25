@@ -1,14 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Create Your Account</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='Regsiter.css'>
-    <script src='Register.JS'></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="Register.css"/>    
+    <script src="Register.JS"></script>
+    <title>Welcome</title>
 </head>
 <body>
-    
+    <p>Create Your Account</p>
+    <form id="registerDetails">
+        <div id = "firstForm">First Name:
+            <div class = "textField">
+                <input type= "text" id = "Fname" name = "firstName" placeholder="First Name...">
+            </div>
+        </div>
+
+        <div id = "lastForm">Last Name:
+            <div class = "textField">
+                <input type= "text" id = "Lname" name = "lastName" placeholder="Last Name...">
+            </div>
+        </div> 
+
+        <div id = "emailForm">Email:
+            <div class = "textField">
+                <input type= "email" id = "email" name = "email" placeholder="Your Email...">
+            </div>
+        </div> 
+
+        <div id = "passForm">Enter Password:
+            <div id = "passMessage">
+                Use atleast 8 characters with a mix of Uppercase, Lowercase, and Numbers
+            </div>
+            <div class = "textField">
+                <input type= "password" id = "password" name = "Password" placeholder="Enter Password">
+            </div>
+        </div>
+        
+        <div id = "confirmForm">Repeat Password: 
+            <div class = "textField">
+                <input type= "password" id = "password" name = "PaswordConfirm" placeholder="Repeat Password">
+            </div>
+        </div>
+    </form>
+    <button type = "submit" id = "signUpBttn" onclick="checkForm()">
+        Sign Up
+    </button>
+    <button type = "button" id = "signInBttn"> 
+        Sign In
+    </button>
 </body>
 </html>

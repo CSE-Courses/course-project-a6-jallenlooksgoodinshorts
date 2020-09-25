@@ -22,6 +22,7 @@ def newUser(email,password,fname,lname,username):
         statement.execute(inputValues, (email,password,fname,lname,username))
         conn.commit()
 
+
         statement.close()
         conn.close()
 

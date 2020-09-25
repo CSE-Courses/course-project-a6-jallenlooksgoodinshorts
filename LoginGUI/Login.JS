@@ -15,24 +15,28 @@ function checkCred(username){
     }
 }
 
-function sendJSON(json) {
+function sendJSON(input) {
     xml = new XMLHttpRequest();
     url = "https://httpbin.org/post "; //PLACEHOLDER UNTIL I KNOW WHERE TO SEND IT
     xml.open("POST", url, true);
     xml.setRequestHeader("Content-Type", "application/json");
     xml.onreadystatechange = function () {
         if (xml.readyState === 4 && xml.status === 200){
-            console.log(JSON.parse(xml.responseText)["data"]); //JUST A TEST, NEEDS TO BE DELETED IN IMPLEMENTATION
-            //HERE IS WHERE WE REACT TO THE SERVERS MESSAGE
+            console.log(JSON.parse(xml.responseText)["data"]); //Remove On Release
             data = JSON.parse(xml.responseText)["data"];
-            if (data === json){
-                window.location.replace("ConfirmLogin\\LoginConfirmed.html");
-            }else{
-                alert("Login Failed");
-            }
+            login(input, data);
         }
     };
-    xml.send(json);
+    xml.send(input);
+}
+
+function login(input, json) {
+    //Set What the Server Responds With and rejects
+    if (input === json){
+        window.location.replace("ConfirmLogin\\LoginConfirmed.html");
+    }else{
+        alert("Login Failed");
+    }
 }
 
 function sendCred() {

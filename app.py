@@ -1,11 +1,14 @@
 from flask import Flask, render_template
 from forms import LoginForm, RegistrationForm
+from db import newUser, loginUser
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you_killed_my_father_prepare_to_die'
 
 @app.route('/')
 @app.route('/home')
+def home():
+    return render_template('home.html', title = 'Home')
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -14,7 +17,7 @@ def login():
 
 @app.route('/register',  methods = ['GET', 'POST'])
 def register():
-    form = RegistrationForm
+    form = RegistrationForm()
     return render_template('register.html', title = 'Register')
 
 if __name__ == '__main__':

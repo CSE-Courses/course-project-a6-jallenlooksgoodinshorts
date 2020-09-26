@@ -1,14 +1,15 @@
-function checkEmail(email){
-    if(!email.includes("@")){
-        return false;
-    }else{
+function validateForm(){
+    form = document.getElementById("registerDetails");
+    if(form[3].value === form[4].value){
         return true;
+    }else{
+        /*put here for testing will swap to nonintrusive status*/
+        alert("Passwords are not identical");
+        return false;
     }
 }
 
-function checkForm(){
-    form = document.getElementById("registerDetails");
-    if(form[0].value === "" && form[1].value === "" && form[2].value === "" && form[3].value === "" && form[4].value === ""){
-        alert("please asd");
-    }
+function mainPage(){
+    /*will send to main page*/
+    alert("Sending to main Page");
 }

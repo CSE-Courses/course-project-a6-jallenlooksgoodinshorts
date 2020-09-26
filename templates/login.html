@@ -1,14 +1,23 @@
 {% extends 'head.html' %}
 {% block content %}
-    <div id="lgin">
-      <form id="loginfrm">
-          Username: <input type="text" name="Username" value=""><br>
-          Password: <input type="password" name="Password" value=""><br>
-        </form>
-  
-      <button type="button" id="loginbut" onclick="sendCred()">Login</button>
-    </div>
-   
-  </body>
+
+<div class="container">
+  <div class="card mb-3">
+    <h2 class="card-title">Login to your account:</h5>
+      <div class="card-body"></div>
+
+      <form>
+        <div class="form-group">
+          <label for="inputFirstName">Username:</label>
+          <input type="text" class="form-control" id="firstForm" placeholder="Username">
+        </div>
+        <div class="form-group">
+          <label for="inputLastName">Password:</label>
+          <input type="password" class="form-control" id="lastform" placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+  </div>
+</div>
 
 {% endblock content %}

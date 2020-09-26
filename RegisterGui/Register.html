@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="Register.css"/>    
+    <script src="Register.JS"></script>
+    <title>Welcome</title>
+</head>
+<body>
+    <p>Create Your Account</p>
+    <form id="registerDetails" onsubmit = "return validateForm()" method = "post">
+        <div id = "firstForm">First Name:<br>
+            <input type= "text" name = "firstName" placeholder="First Name..." maxlength = "20" required>
+        </div>
+
+        <div id = "lastForm">Last Name:<br>
+            <input type= "text" name = "lastName" placeholder="Last Name..." maxlength = "20" required>
+        </div> 
+
+        <div id = "emailForm">Email:<br>
+            <input type= "email" name = "email" placeholder="Your Email..." maxlength = "30" required>
+        </div> 
+
+        <div id = "passForm">Enter Password:<br>
+            <input type= "password" title = "Use a mix of numbers, Uppercase, and Lowercase characters" 
+                name = "pass" placeholder="Enter Password" maxlength="20" minlength="8" pattern = "[0-9A-z]" required>
+        </div>
+        
+        <div id = "confirmForm">Repeat Password: <br>
+            <input type= "password" title = "Use a mix of numbers, Uppercase, and Lowercase characters" 
+                name = "rPass" placeholder="Repeat Password" maxlength="20" minlength="8" pattern = "[0-9A-z]" required>
+        </div>
+
+        <button type= "submit" value = "Sign Up" id = "signUpBttn">Sign Up </button>
+    </form>
+    <button type = "button" id = "signInBttn" onclick = "mainPage()"> 
+        Sign In
+    </button>
+</body>
+</html>

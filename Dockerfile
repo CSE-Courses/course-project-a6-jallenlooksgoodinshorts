@@ -9,6 +9,7 @@ COPY package*.json ./
 RUN pip install mysql-connector
 RUN pip install flask
 RUN pip install flask-wtf
+RUN pip install email_validator
 
 
 

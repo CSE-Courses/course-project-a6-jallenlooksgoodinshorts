@@ -1,18 +1,18 @@
-FROM node:12
+FROM python:3.8.5
 
 # Setting app directory
-WORKDIR /
+WORKDIR /app
 
 # Installing dependencies
 COPY package*.json ./
 
-RUN npm install mysql
-RUN npm install
+RUN pip install mysql-connector
+RUN pip install flask
+
 
 #Bundling Source
-COPY . .
+COPY . /app
 
-#Exposing port to run 
-EXPOSE 4000
+ENTRYPOINT [ "python" ]
 
-CMD [ "app/server.py" ]
+CMD [ "app.py" ]

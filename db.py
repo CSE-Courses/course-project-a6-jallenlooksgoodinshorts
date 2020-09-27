@@ -41,6 +41,7 @@ def loginUser(username, password):
     inputCommand = "SELECT * FROM username WHERE NAMES = %s AND password = %s"
     try:
         conn = connect()
+        statement = conn.cursor(prepared=True)
         statement.execute(inputCommand, (username, password))
 
         rs = statement.fetchone()
@@ -51,7 +52,7 @@ def loginUser(username, password):
             print("Username/Password not found")
 
         statement.close()
-        con.close()
+        conn.close()
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -59,4 +60,4 @@ def loginUser(username, password):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
-            con.close()
+            conn.close()

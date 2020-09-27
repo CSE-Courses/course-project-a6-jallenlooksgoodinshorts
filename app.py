@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from forms import LoginForm, RegistrationForm
 from db import newUser, loginUser
+from flask_login import LoginManager
 #from flask_bcrypt import Bcrypt
 import bcrypt
 
@@ -29,6 +30,13 @@ def register():
         lastName = form.lastname
         email = form.email
         hashedPassword = bcrypt.hashpw(form.password, bcrypt.gensalt())
+        username = form.username
+        # register a new user usign db command newUser
+        newUser(email, hashedPassword, firstName, lastName, username)
+        flash('Account Created!')
+        
+
+
     return render_template('register.html', title = 'Register')
 
 if __name__ == '__main__':

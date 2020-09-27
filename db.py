@@ -1,10 +1,13 @@
 import mysql.connector
 from mysql.connector import errorcode
 
+def connect():
+    return mysql.connector.connect(user='t8UFMyPCs3',password='RZfgggcfAg',host='remotemysql.com',database='t8UFMyPCs3')
+
 
 def testConn():
     try:
-        conn = mysql.connector.connect(user='kgood',password='cse442a6',host='127.0.0.1',database='userdata')
+        db = connect()
         print("Connected")
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -17,7 +20,7 @@ def testConn():
 def newUser(email,password,fname,lname,username):
     inputValues = "INSERT INTO users VALUES(%s,%s,%s,%s,%s);"
     try:
-        conn = mysql.connector.connect(user='kgood',password='cse442a6',host='127.0.0.1',database='userdata')
+        conn = connect()
         statement = conn.cursor(prepared=True)
         statement.execute(inputValues, (email,password,fname,lname,username))
         conn.commit()
@@ -37,8 +40,7 @@ def newUser(email,password,fname,lname,username):
 def loginUser(username, password):
     inputCommand = "SELECT * FROM username WHERE NAMES = %s AND password = %s"
     try:
-        con = mysql.connector.connect(user="root", password="1234", host="localhost", database="userdata")
-        statement = con.cursor(prepared=True)
+        conn = connect()
         statement.execute(inputCommand, (username, password))
 
         rs = statement.fetchone()

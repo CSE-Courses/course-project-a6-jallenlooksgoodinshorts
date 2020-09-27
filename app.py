@@ -1,6 +1,10 @@
 from flask import Flask, render_template
 from forms import LoginForm, RegistrationForm
 from db import newUser, loginUser
+#from flask_bcrypt import Bcrypt
+import bcrypt
+
+#Runs Bcrypt on server 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you_killed_my_father_prepare_to_die'
@@ -13,11 +17,18 @@ def home():
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     form = LoginForm()
+    # if form.validate_on_submit():
+    #     firstname = form.
     return render_template('login.html', title = 'Login')
 
 @app.route('/register',  methods = ['GET', 'POST'])
 def register():
     form = RegistrationForm()
+    if form.validate_on_submit():
+        firstName = form.firstname
+        lastName = form.lastname
+        email = form.email
+        hashedPassword = bcrypt.hashpw(form.password, bcrypt.gensalt())
     return render_template('register.html', title = 'Register')
 
 if __name__ == '__main__':

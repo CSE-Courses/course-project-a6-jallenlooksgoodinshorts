@@ -84,6 +84,8 @@ def register():
 
         #     print (firstName)
 
+        newUser(email, hashedPassword, firstName, lastName, username)
+
         with open('userpass.txt', mode='w') as csvfile:
             writeme = csv.writer(csvfile)
             writeme.writerow([email, hashedPassword])

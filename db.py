@@ -2,12 +2,12 @@ import mysql.connector
 from mysql.connector import errorcode
 
 def connect():
-    return mysql.connector.connect(user='t8UFMyPCs3',password='RZfgggcfAg',host='remotemysql.com',database='t8UFMyPCs3')
-
+    database = mysql.connector.connect(user='k7aqgz64ljyxr9w9', password='jl2ymrryvog4t8hu' ,host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database='mh4057an9aee5vxa')
+    return database
 
 def testConn():
     try:
-        db = connect()
+        conn = connect()
         print("Connected")
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -18,7 +18,7 @@ def testConn():
         conn.close()
 
 def newUser(email,password,fname,lname,username):
-    inputValues = "INSERT INTO users VALUES(%s,%s,%s,%s,%s);"
+    inputValues = "INSERT INTO users (email, password, first_name, last_name, username)VALUES(%s,%s,%s,%s,%s);"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
@@ -53,13 +53,17 @@ def loginUser(username, password):
 
         if rs is not None:
             print("Successful Login")
+            statement.close()
+            conn.close()
+
+            return rs[0]
         else:
             print("Username/Password not found")
 
-        statement.close()
-        conn.close()
+            statement.close()
+            conn.close()
 
-        return rs[0]
+            return None
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -68,5 +72,6 @@ def loginUser(username, password):
             print("Database not found")
         else:
             conn.close()
+        return None
 
 #have return email of validated user

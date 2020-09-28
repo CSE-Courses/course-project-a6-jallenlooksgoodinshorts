@@ -6,6 +6,7 @@ WORKDIR /app
 # Installing dependencies
 COPY package*.json ./
 
+RUN pip install mysql
 RUN pip install mysql-connector
 RUN pip install flask
 RUN pip install flask-wtf

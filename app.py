@@ -1,9 +1,11 @@
 from flask import Flask, render_template, url_for, redirect, flash
 from forms import LoginForm, RegistrationForm
-from db import newUser, loginUser
+import db
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin
-#from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt
 import bcrypt
+import sys
+import os
 
 #Runs Bcrypt on server 
 
@@ -25,6 +27,10 @@ class User(UserMixin):
         user = User(id)
         return user
 
+db.testConn()
+
+
+bcrypt = Bcrypt(app)
 
 @app.route('/')
 @app.route('/home')
@@ -40,47 +46,31 @@ def welcome():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        email = form.email
-        hashedPassword = bcrypt.hashpw(form.password, bcrypt.gensalt())
+        email = form.email.data
+        hashedPassword = bcrypt.hashpw(form.password.data, bcrypt.gensalt()).decode('utf-8')
 
-        authenticatedUser = loginUser(email, hashedPassword)
+        authenticatedUser = db.loginUser(email, hashedPassword)
+        
+        newUserType = User(authenticatedUser)
+        login_user(newUserType)
 
-        if authenticatedUser != None:
+        flash('Success', 'success')
 
-            newUserType = User(authenticatedUser)
-            login_user(newUserType)
-
-            flash('Success', 'success')
-
-            return redirect(url_for('welcome'))
-        else :
-            flash('Incorrect email or password', 'warning')
-            return redirect(url_for('login'))
-
-    return render_template('login.html', title = 'Login')
+    return render_template('login.html', title = 'Login', form=form)
 
 @app.route('/register',  methods = ['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        firstName = form.firstname
-        lastName = form.lastname
-        email = form.email
-        hashedPassword = bcrypt.hashpw(form.password, bcrypt.gensalt())
+        firstName = form.firstname.data
+        lastName = form.lastname.data
+        email = form.email.data
+        hashedPassword = bcrypt.generate_password_hash(form.password.data, bcrypt.gensalt()).decode('utf-8')
         username = form.username
 
-        # register a new user usign db command newUser and reurn email
-        newUserAuth = newUser(email, hashedPassword, firstName, lastName, username)
+        newUserAuth = db.newUser(email, hashedPassword, firstName, lastName, username)
 
-        if newUserAuth != None:
-
-            flash('Account Created!', 'success')
-
-            return redirect(url_for('login'))
-        else : 
-            flash('Incorrect email or password', 'warning')
-
-    return render_template('register.html', title = 'Register')
+    return render_template('register.html', title = 'Register', form=form)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=4000)

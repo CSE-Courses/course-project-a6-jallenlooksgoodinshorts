@@ -61,14 +61,14 @@ def loginUser(username, password):
             statement.close()
             conn.close()
 
-            return rs
+            return True
         else:
             print("Username/Password not found")
 
             statement.close()
             conn.close()
 
-            return None
+            return False
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -77,6 +77,6 @@ def loginUser(username, password):
             print("Database not found")
         else:
             conn.close()
-        return None
+        return False
 
 #have return email of validated user

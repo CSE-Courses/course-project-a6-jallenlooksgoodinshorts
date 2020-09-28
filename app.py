@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import newUser
+from db import loginUser, newUser
 from forms import LoginForm, RegistrationForm
 import db
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin
@@ -52,22 +52,29 @@ def login():
         email = form.email.data
         hashedPassword = form.password.data
 
-        valid = False
-
-        with open('userpass.txt', mode='r') as csvfile:
-            readme = csv.reader(csvfile)
-            for row in readme:
-                if row[0] == email:
-                    if row[1] == hashedPassword:
-                        valid = True
-
-        signedIn = User(email)
-        login_user(signedIn)
-
-        if valid :
+        if loginUser(email, hashedPassword) :
+            signedIn = User(email)
+            login_user(signedIn)
             return redirect(url_for('welcome'))
         else :
-            return redirect(url_for('home'))
+            return redirect(url_for('register'))
+
+        # valid = False
+
+        # with open('userpass.txt', mode='r') as csvfile:
+        #     readme = csv.reader(csvfile)
+        #     for row in readme:
+        #         if row[0] == email:
+        #             if row[1] == hashedPassword:
+        #                 valid = True
+
+        # signedIn = User(email)
+        # login_user(signedIn)
+
+        # if valid :
+        #     return redirect(url_for('welcome'))
+        # else :
+        #     return redirect(url_for('home'))
 
     return render_template('login.html', title = 'Login', form=form)
 

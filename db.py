@@ -37,6 +37,8 @@ def newUser(email,password,fname,lname,username):
     else:
         conn.close()
 
+    #Have return email of new user
+
 def loginUser(username, password):
     inputCommand = "SELECT * FROM username WHERE NAMES = %s AND password = %s"
     try:
@@ -61,3 +63,5 @@ def loginUser(username, password):
             print("Database not found")
         else:
             conn.close()
+
+#have return email of validated user

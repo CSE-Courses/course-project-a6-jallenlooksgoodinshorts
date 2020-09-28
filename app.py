@@ -18,8 +18,14 @@ def home():
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     form = LoginForm()
-    # if form.validate_on_submit():
-    #     firstname = form.
+    if form.validate_on_submit():
+        email = form.email
+        hashedPassword = bcrypt.hashpw(form.password, bcrypt.gensalt())
+
+        authenticatedUser = loginUser(email, hashedPassword)
+        login_user(authenticatedUser)
+
+
     return render_template('login.html', title = 'Login')
 
 @app.route('/register',  methods = ['GET', 'POST'])
@@ -31,7 +37,8 @@ def register():
         email = form.email
         hashedPassword = bcrypt.hashpw(form.password, bcrypt.gensalt())
         username = form.username
-        # register a new user usign db command newUser
+
+        # register a new user usign db command newUser and reurn email
         newUser(email, hashedPassword, firstName, lastName, username)
         flash('Account Created!')
 

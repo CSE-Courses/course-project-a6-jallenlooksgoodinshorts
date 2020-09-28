@@ -11,7 +11,7 @@ RUN pip install flask
 RUN pip install flask-wtf
 RUN pip install email_validator
 RUN pip install bcrypt
-RUN pip install LoginManager
+RUN pip install flask-login
 
 
 

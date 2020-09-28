@@ -15,6 +15,10 @@ app.config['SECRET_KEY'] = 'you_killed_my_father_prepare_to_die'
 def home():
     return render_template('home.html', title = 'Home')
 
+@app.route('/welcome')
+def welcome():
+    return render_template('Welcome.html', title = 'Welcome')
+
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -42,7 +46,7 @@ def register():
         newUser(email, hashedPassword, firstName, lastName, username)
         flash('Account Created!')
 
-
+        return app.redirect(url_for('login'))
 
     return render_template('register.html', title = 'Register')
 

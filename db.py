@@ -24,10 +24,13 @@ def newUser(email,password,fname,lname,username):
         statement = conn.cursor(prepared=True)
         statement.execute(inputValues, (email,password,fname,lname,username))
         conn.commit()
+        rs = statement.fetchone()
 
 
         statement.close()
         conn.close()
+
+        return rs[0]
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -55,6 +58,8 @@ def loginUser(username, password):
 
         statement.close()
         conn.close()
+
+        return rs[0]
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

@@ -36,7 +36,7 @@ def newUser(email,password,fname,lname,username):
         statement.close()
         conn.close()
 
-        return rs[0]
+        return True
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -44,7 +44,8 @@ def newUser(email,password,fname,lname,username):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print('databse not found')
     else:
-        conn.close()
+        return False
+
 
 
 def loginUser(username, password):

@@ -23,44 +23,29 @@ def testConn():
     else:
         conn.close()
 
-# def newUser(email,password,fname,lname,username):
-#     inputValues = "INSERT INTO users VALUES(%s,%s,%s,%s,%s);"
-#     try:
-#         conn = connect()
-#         statement = conn.cursor(prepared=True)
-#         statement.execute(inputValues, (email,password,fname,lname,username))
-#         conn.commit()
-#         rs = statement.fetchone()
+def newUser(email,password,fname,lname,username):
+    inputValues = "INSERT INTO users VALUES(%s,%s,%s,%s,%s);"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputValues, (email,password,fname,lname,username))
+        conn.commit()
+        rs = statement.fetchone()
 
 
-#         statement.close()
-#         conn.close()
+        statement.close()
+        conn.close()
 
-#         return rs[0]
+        return rs[0]
 
-#     except mysql.connector.Error as err:
-#         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-#             print('Username/password issue')
-#         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-#             print('databse not found')
-#     else:
-#         conn.close()
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+    else:
+        conn.close()
 
-
-def newUser(email, password, fname, lname, username):
-    db = connect()
-    cursor = db.cursor()
-    sql = 'INSERT INTO user VALUES (%s, %s, %s, %s, %s)'
-    val = (email,password,fname,lname,username)
-    cursor.execute(sql, val)
-    db.commit()
-    user_id = cursor.lastrowid
-    db.close()
-    return user_id
-
-
-
-    #Have return email of new user
 
 def loginUser(username, password):
     inputCommand = "SELECT * FROM users WHERE email = %s AND password = %s"

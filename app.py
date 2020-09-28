@@ -6,6 +6,9 @@ from flask_bcrypt import Bcrypt
 import bcrypt
 import sys
 import os
+import csv
+import secrets
+from csv import reader
 
 #Runs Bcrypt on server 
 
@@ -45,32 +48,48 @@ def welcome():
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     form = LoginForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit() :
         email = form.email.data
-        hashedPassword = bcrypt.hashpw(form.password.data, bcrypt.gensalt()).decode('utf-8')
+        hashedPassword = form.password.data
 
-        authenticatedUser = db.loginUser(email, hashedPassword)
+        valid = False
+
+        with open('userpass.txt', mode='r') as csvfile:
+            readme = reader(csvfile)
+            for row in reader:
+                if row[0] == email:
+                    if row[1] == hashedPassword:
+                        valid = True
+
         
-        newUserType = User(authenticatedUser)
-        login_user(newUserType)
 
-        flash('Success', 'success')
+        return redirect(url_for('welcome'))
 
     return render_template('login.html', title = 'Login', form=form)
 
 @app.route('/register',  methods = ['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    if form.validate_on_submit():
-        firstName = form.firstname.data
-        lastName = form.lastname.data
-        email = form.email.data
-        hashedPassword = bcrypt.generate_password_hash(form.password.data, bcrypt.gensalt()).decode('utf-8')
-        username = form.username
+    # if form.validate_on_submit():
 
-        newUserAuth = db.newUser(email, hashedPassword, firstName, lastName, username)
+    # firstName = form.firstname.data
+    # lastName = form.lastname.data
+    # email = form.email.data
+    # hashedPassword = form.password.data
+    # username = form.username.data
 
-    return render_template('register.html', title = 'Register', form=form)
+    # #     print (firstName)
+
+    # with open('userpass.txt', mode='w') as csvfile:
+    #     csv_file = csv.writer(csvfile, delimiter=',')
+    #     csv_file.writerow(['test', 'test'])
+    #     csv_file.writerow([email, hashedPassword])
+    #     csvfile.close()
+
+    if form.validate_on_submit() :
+        return redirect(url_for('login'))
+
+    return render_template('register.html', title='Register', form=form)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=4000)

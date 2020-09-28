@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
+from db import newUser
 from forms import LoginForm, RegistrationForm
 import db
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin
@@ -8,7 +9,6 @@ import sys
 import os
 import csv
 import secrets
-from csv import reader
 
 #Runs Bcrypt on server 
 
@@ -55,38 +55,42 @@ def login():
         valid = False
 
         with open('userpass.txt', mode='r') as csvfile:
-            readme = reader(csvfile)
-            for row in reader:
+            readme = csv.reader(csvfile)
+            for row in readme:
                 if row[0] == email:
                     if row[1] == hashedPassword:
                         valid = True
 
-        
+        signedIn = User(email)
+        login_user(signedIn)
 
-        return redirect(url_for('welcome'))
+        if valid :
+            return redirect(url_for('welcome'))
+        else :
+            return redirect(url_for('home'))
 
     return render_template('login.html', title = 'Login', form=form)
 
 @app.route('/register',  methods = ['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    # if form.validate_on_submit():
+    if form.validate_on_submit():
 
-    # firstName = form.firstname.data
-    # lastName = form.lastname.data
-    # email = form.email.data
-    # hashedPassword = form.password.data
-    # username = form.username.data
+        firstName = form.firstname.data
+        lastName = form.lastname.data
+        email = form.email.data
+        hashedPassword = form.password.data
+        username = form.username.data
 
-    # #     print (firstName)
+        #     print (firstName)
 
-    # with open('userpass.txt', mode='w') as csvfile:
-    #     csv_file = csv.writer(csvfile, delimiter=',')
-    #     csv_file.writerow(['test', 'test'])
-    #     csv_file.writerow([email, hashedPassword])
-    #     csvfile.close()
+        with open('userpass.txt', mode='w') as csvfile:
+            writeme = csv.writer(csvfile)
+            writeme.writerow([email, hashedPassword])
+            csvfile.close()
+        
+        flash('account created', 'success')
 
-    if form.validate_on_submit() :
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)

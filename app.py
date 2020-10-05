@@ -61,23 +61,6 @@ def login():
         else :
             return redirect(url_for('register'))
 
-        # valid = False
-
-        # with open('userpass.txt', mode='r') as csvfile:
-        #     readme = csv.reader(csvfile)
-        #     for row in readme:
-        #         if row[0] == email:
-        #             if row[1] == hashedPassword:
-        #                 valid = True
-
-        # signedIn = User(email)
-        # login_user(signedIn)
-
-        # if valid :
-        #     return redirect(url_for('welcome'))
-        # else :
-        #     return redirect(url_for('home'))
-
     return render_template('login.html', title = 'Login', form=form)
 
 @app.route('/register',  methods = ['GET', 'POST'])

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" style="height:100%;">
+
 <head>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="Register.css"/>    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="Register.css" />
     <script src="Register.JS"></script>
     <title>Welcome</title>
 </head>
@@ -14,42 +16,47 @@
 
     {% if current_user.is_authenticated %}
     <nav class="navbar navbar-light navbar-expand-md justify-content-center" style="background-color: gray">
-    <a href="/" class="navbar-brand d-flex w-50 mr-auto">ENTER SITE NAME</a>
-    <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
-        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-            <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('home')}}">Browse</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('profile')}}">
-                    <img src="templates\art\profile.png" width="20" height="20" class="d-inline-block align-top" alt="">
-                    Profile
-                  </a>
-            </li>
-        </ul>
-    </div>
-</nav>
-{% else %}
-<nav class="navbar navbar-light navbar-expand-md justify-content-center" style="background-color: gray">
-    <a href="/" class="navbar-brand d-flex w-50 mr-auto">ENTER SITE NAME</a>
-    <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
-        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">Browse</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('login')}}">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('register')}}">Register</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+        <a href="/" class="navbar-brand d-flex w-50 mr-auto">ENTER SITE NAME</a>
+        <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+            <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('home')}}">Browse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('profile')}}">
+                        <img src="templates\art\profile.png" width="20" height="20" class="d-inline-block align-top"
+                            alt="">
+                        Profile
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% else %}
+    <nav class="navbar navbar-light navbar-expand-md justify-content-center" style="background-color: gray">
+        <a href="/" class="navbar-brand d-flex w-50 mr-auto">ENTER SITE NAME</a>
+        <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+            <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Browse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('login')}}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('register')}}">Register</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
 
     {% block content %}
     {% endblock content %}
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>

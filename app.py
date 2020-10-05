@@ -9,11 +9,13 @@ import sys
 import os
 import csv
 import secrets
+import gunicorn
 
 #Runs Bcrypt on server 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you_killed_my_father_prepare_to_die'
+port = int(os.environ.get("PORT", 5000))
 
 login_manager = LoginManager(app)
 
@@ -105,5 +107,4 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=4000)
-0
+    app.run(debug=True, host='0.0.0.0', port=port)

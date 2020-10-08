@@ -15,3 +15,8 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
     password = StringField('Password', validators=[DataRequired()])
     submit = SubmitField('Register')
+
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    body = StringField('Body', validators=[DataRequired()])
+    ##picture = Something() idk how to do the picture here

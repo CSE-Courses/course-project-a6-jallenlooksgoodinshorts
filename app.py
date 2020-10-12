@@ -1,8 +1,8 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import loginUser, newUser
-from forms import LoginForm, RegistrationForm
+from db import getAllActivities, loginUser, newUser
+from forms import LoginForm, RegistrationForm, PostForm
 import db
-from flask_login import LoginManager, login_user, current_user, login_required, UserMixin
+from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
 import sys
@@ -10,6 +10,7 @@ import os
 import csv
 import secrets
 import gunicorn
+from base64 import b64encode
 
 #Runs Bcrypt on server 
 
@@ -42,10 +43,42 @@ bcrypt = Bcrypt(app)
 def home():
     return render_template('home.html', title = 'Home')
 
-@app.route('/welcome')
+@app.route('/activityfeed')
 @login_required
-def welcome():
-    return render_template('welcome.html', title = 'Welcome')
+def activityfeed():
+
+    activityList = getAllActivities()
+    activities = []
+
+    for activ in activityList :
+        image = b64encode(activ[2]).decode('"utf-8"')
+        likes = 0 # Change for likes
+
+        a = {
+            'title': activ[0],
+            'description': activ[1],
+            'image': image
+            }
+        activities.append(a)
+        
+    activities.reverse
+
+    return render_template('activityfeed.html', activities = activities, title = 'Welcome')
+
+@app.route('/newpost', methods = ['GET', 'POST'])
+@login_required
+def newpost():
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data 
+        description = form.body.data
+        image = form.image.data.read()
+        db.createActivity(title, description, image)
+
+        return redirect(url_for('activityfeed'))
+
+    return render_template('newPost.html', title = 'Post', form=form)
+    
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -57,7 +90,7 @@ def login():
         if loginUser(email, hashedPassword) :
             signedIn = User(email)
             login_user(signedIn)
-            return redirect(url_for('welcome'))
+            return redirect(url_for('activityfeed'))
         else :
             return redirect(url_for('register'))
 
@@ -74,8 +107,6 @@ def register():
         hashedPassword = form.password.data
         username = form.username.data
 
-        #     print (firstName)
-
         newUser(email, hashedPassword, firstName, lastName, username)
 
         with open('userpass.txt', mode='w') as csvfile:
@@ -88,6 +119,17 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/profile')
+@login_required
+def profile():
+    return redirect(url_for('profile'))
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

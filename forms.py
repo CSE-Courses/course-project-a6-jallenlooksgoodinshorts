@@ -19,4 +19,5 @@ class RegistrationForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     body = StringField('Body', validators=[DataRequired()])
-    ##picture = Something() idk how to do the picture here
+    image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg'])])
+    submit = SubmitField('Create Activity')

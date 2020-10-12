@@ -1,0 +1,11 @@
+{% extends 'head.html' %}
+{% from 'adisplay.html' import activity_display %}
+{% block content %}
+
+<div id="post"></div>
+
+{% for activity in activities %}
+	{{ activity_display(activity) }}
+{% endfor %}
+
+{% endblock content %}

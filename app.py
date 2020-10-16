@@ -138,7 +138,7 @@ def register():
 @app.route('/profile')
 @login_required
 def profile():
-    return redirect(url_for('profile'))
+    return render_template('profile.html', title='Register')
 
 @app.route('/logout')
 @login_required

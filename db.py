@@ -128,9 +128,9 @@ def getActivity(activity_id):
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand, activity_id)
+        statement.execute(inputCommand, (activity_id,))
 
-        rs = statement.fetchall()
+        rs = statement.fetchone()
 
         return rs
 

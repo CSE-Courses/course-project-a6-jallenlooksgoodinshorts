@@ -1,11 +1,11 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getAllActivities, loginUser, newUser
+from db import getActivity, getAllActivities, loginUser, newUser, testConn
 from forms import LoginForm, RegistrationForm, PostForm
-import db
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
 import sys
+import db
 import os
 import csv
 import secrets
@@ -33,7 +33,7 @@ class User(UserMixin):
         user = User(id)
         return user
 
-db.testConn()
+testConn()
 
 
 bcrypt = Bcrypt(app)
@@ -43,7 +43,7 @@ bcrypt = Bcrypt(app)
 def home():
     return render_template('home.html', title = 'Home')
 
-@app.route('/activityfeed')
+@app.route('/activityfeed', methods = ['GET', 'POST'])
 @login_required
 def activityfeed():
 
@@ -65,6 +65,19 @@ def activityfeed():
     activities.reverse
 
     return render_template('activityfeed.html', activities = activities, title = 'Welcome')
+
+@app.route('/activity/<int:activity_id>', methods = ['GET', 'POST'])
+def activity(activity_id):
+    activ = getActivity(activity_id)
+    image = b64encode(activ[2]).decode('"utf-8"')
+    likes = 0 # Change for likes
+    a = {
+        'title': activ[0],
+        'description': activ[1],
+        'image': image,
+        'activity_id': activ[4]
+        }
+    return render_template('activity.html', activity = a, title = 'Activity')
 
 @app.route('/newpost', methods = ['GET', 'POST'])
 @login_required
@@ -120,20 +133,6 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)
-
-@app.route('/activity/<int:activity_id>', methods = ['GET', 'POST'])
-def activity(activity_id):
-    activ = getActivity(activity_id)
-    image = b64encode(activ[2]).decode('"utf-8"')
-    likes = 0 # Change for likes
-    a = {
-        'title': activ[0],
-        'description': activ[1],
-        'image': image,
-        'activity_id': activ[4]
-        }
-    return render_template('activityfeed.html', activity = a, title = 'Activity')
-
 
 
 @app.route('/profile')

@@ -14,6 +14,7 @@
           <p class="card-text" id="descroption">Description:</p>
           <p class="card-text">{{ activity.description }}</p>
           <p class="card-text">{{ activity.activity_id }}</p>
+          <button type="button" href="{{ url_for('activity', activity_id=activity.activity_id) }}" class="btn btn-primary btn-sm">View project</button>
         </div>
       </div>
     </div>

@@ -123,5 +123,25 @@ def getAllActivities():
             conn.close()
         return False
 
+def getActivity(activity_id):
+    inputCommand = "SELECT title, description, image, likes, activity_id FROM activities WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, activity_id)
+
+        rs = statement.fetchall()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
 
 #have return email of validated user

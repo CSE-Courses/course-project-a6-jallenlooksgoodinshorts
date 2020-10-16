@@ -1,0 +1,43 @@
+body{
+    height:100%; 
+    background-image: linear-Gradient(lightblue,gray);
+}
+
+#personalInfo {
+    border: 1px solid black;
+    left: -10rem;
+    width: 50vw;
+}
+
+#profile{
+    border: 1px solid black;
+    width: 18rem;
+    height: 15rem;
+}
+
+#sidebar{
+    background-color: darkgray;
+    border-right: 1px solid black;
+    width:18rem;
+    top: -1rem;
+    height: 41.5rem;
+}
+
+#sidebar li{
+    background: darkgray;
+    border-style: solid;
+    border-color: black;
+}
+
+#sidebar li:hover{
+    background-color: gray;
+}
+
+#personalInfo span{
+    width: 100px;
+    border: 1px solid black;
+}
+
+#stats ul{
+    border: 1px solid black;
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="profile.css"/>
+	<script src="Register.JS"></script>
+    <title>Welcome</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-light form-group" style="background-color: #e3f2fd;">
+        <!-- Navbar content -->
+    	<ul class="navbar-nav">
+        	<li class="nav-item">
+            	<a class="nav-link " href="{{ url_for('home') }}">Home</a>
+        	</li>
+	  	</ul>
+	</nav>
+	  
+    <div class="float-left">
+	  <div class="card" id= "sidebar">
+			<ul class="list-group list-group-flush" >
+				<li class="list-group-item"><a href="profile.html" class="card-link">Profile</a></li>
+				<li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Profile Settings</a></li>
+				<li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Notifications</a></li>
+				<li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Privacy Settings</a></li>
+				<li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Security Settings</a></li>
+			</ul>
+      	</div>
+	</div>
+	
+    <div class="container">
+      	<div class="row form-group">
+			<div class="col-6">
+				<div class="card" id = "profile">
+					<img class="card-img-top" src="/course-project-a6-jallenlooksgoodinshorts/questionMark.png" alt="Profile Picture">
+					<div class="card-body">
+						<p class="card-text"><a href="#" class=card-link>Click to add or change your profile picture.</a></p>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-6">
+				<div class="card" id = "personalInfo">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">Location:</li>
+						<li class="list-group-item">Gender:</li>
+						<li class="list-group-item">Email:</li>
+					</ul>
+				</div>
+			</div>
+    	</div>
+		  
+		<div class="row two form-group">
+			<div class="col-3" id = "stats">
+				<div class="card">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">Posts:</li>
+						<li class="list-group-item">Activities Completed:</li>
+					</ul>
+				</div>
+			</div>
+	
+			<div class="col-3" id = "stats">
+				<div class="card">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">Followers:</li>
+					<li class="list-group-item">Following:</li>
+				</ul>
+				</div>
+			</div>
+      	</div>
+		  
+		<div class="row three">
+			<div class="col" id = "detail">
+				<div class="card" style="width: 15rem;">
+					<ul class="list-group form-group">
+						<li class="list-group-item">About you:</li>
+						<li class="list-group-item ">Activities Interested in:</li>
+					</ul>
+					<a href="#" class="btn btn-primary mx-auto form-group" style="width:8rem;">Edit Info</a>
+				</div>
+			</div>
+      	</div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+
+</html>

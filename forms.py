@@ -15,3 +15,9 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
     password = StringField('Password', validators=[DataRequired()])
     submit = SubmitField('Register')
+
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    body = StringField('Body', validators=[DataRequired()])
+    image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg'])])
+    submit = SubmitField('Create Activity')

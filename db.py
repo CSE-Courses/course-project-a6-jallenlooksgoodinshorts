@@ -80,4 +80,68 @@ def loginUser(username, password):
             conn.close()
         return False
 
+def createActivity(title, description, image): # Needs to be updated for likes
+    inputValues = "INSERT INTO activities (title, description, image, likes) VALUES(%s,%s,%s,%s);"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputValues, (title,description,image,0)) # Needs to be updated for likes
+        conn.commit()
+        rs = statement.fetchone()
+
+        statement.close()
+        conn.close()
+
+        return True
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+    else:
+        return False
+
+def getAllActivities():
+    inputCommand = "SELECT title, description, image, likes, activity_id FROM activities"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        x = ()
+        statement.execute(inputCommand, x)
+
+        rs = statement.fetchall()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
+def getActivity(activity_id):
+    inputCommand = "SELECT title, description, image, likes, activity_id FROM activities WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (activity_id,))
+
+        rs = statement.fetchone()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
+
 #have return email of validated user

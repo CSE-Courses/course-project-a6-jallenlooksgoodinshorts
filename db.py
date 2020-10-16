@@ -81,7 +81,7 @@ def loginUser(username, password):
         return False
 
 def createActivity(title, description, image): # Needs to be updated for likes
-    inputValues = "INSERT INTO activities VALUES(%s,%s,%s,%s);"
+    inputValues = "INSERT INTO activities (title, description, image, likes) VALUES(%s,%s,%s,%s);"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
@@ -103,7 +103,7 @@ def createActivity(title, description, image): # Needs to be updated for likes
         return False
 
 def getAllActivities():
-    inputCommand = "SELECT title, description, image, likes FROM activities"
+    inputCommand = "SELECT title, description, image, likes, activity_id FROM activities"
     try:
         conn = connect()
         statement = conn.cursor()

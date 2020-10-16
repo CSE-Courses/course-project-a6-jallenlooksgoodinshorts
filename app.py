@@ -57,7 +57,8 @@ def activityfeed():
         a = {
             'title': activ[0],
             'description': activ[1],
-            'image': image
+            'image': image,
+            'activity_id': activ[4]
             }
         activities.append(a)
         

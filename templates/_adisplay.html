@@ -1,0 +1,23 @@
+{% macro activity_display(activity) %}
+
+<br>
+
+<div class="container col-6">
+  <div class="card mb-3">
+    <div class="row">
+      <div class="col-sm-4  align-self-left">
+        <img src="data:;base64,{{ activity.image }}" class="card-img">
+      </div>
+      <div class="col-sm">
+        <h3 class="card-title blue">{{ activity.title }}</h5>
+        <div class="card-body">
+          <p class="card-text" id="descroption">Description:</p>
+          <p class="card-text">{{ activity.description }}</p>
+          <p class="card-text">{{ activity.activity_id }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endmacro %}

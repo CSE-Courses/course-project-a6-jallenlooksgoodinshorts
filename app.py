@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getAllActivities, loginUser, newUser, testConn
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity
 from forms import LoginForm, RegistrationForm, PostForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -20,9 +20,7 @@ port = int(os.environ.get("PORT", 5000))
 
 login_manager = LoginManager(app)
 
-@login_manager.user_loader
-def load_user(id):
-    return User.get_user(id)
+
 
 class User(UserMixin):
     def __init__(self, id):
@@ -32,6 +30,10 @@ class User(UserMixin):
     def get_user(id):
         user = User(id)
         return user
+
+@login_manager.user_loader
+def load_user(id):
+    return User.get_user(id)
 
 testConn()
 
@@ -43,9 +45,9 @@ bcrypt = Bcrypt(app)
 def home():
     return render_template('home.html', title = 'Home')
 
-@app.route('/activityfeed', methods = ['GET', 'POST'])
+@app.route('/browse', methods = ['GET', 'POST'])
 @login_required
-def activityfeed():
+def browse():
 
     activityList = getAllActivities()
     activities = []
@@ -64,7 +66,32 @@ def activityfeed():
         
     activities.reverse
 
-    return render_template('activityfeed.html', activities = activities, title = 'Welcome')
+    return render_template('browse.html', activities = activities, title = 'Welcome')
+
+@app.route('/activityfeed', methods = ['GET', 'POST'])
+@login_required
+def activityfeed():
+
+    activityIDs = getActivityIDs(current_user)
+    activities = []
+    for ids in activityIDs:
+        activityList = getActivity(ids)
+
+        for activ in activityList :
+            image = b64encode(activ[2]).decode('"utf-8"')
+            likes = 0 # Change for likes
+
+            a = {
+                'title': activ[0],
+                'description': activ[1],
+                'image': image,
+                'activity_id': activ[4]
+                }
+            activities.append(a)
+        
+    activities.reverse
+
+    return render_template('browse.html', activities = activities, title = 'Welcome')
 
 @app.route('/activity/<int:activity_id>', methods = ['GET', 'POST'])
 def activity(activity_id):
@@ -87,9 +114,9 @@ def newpost():
         title = form.title.data 
         description = form.body.data
         image = form.image.data.read()
-        db.createActivity(title, description, image)
+        createActivity(title, description, image)
 
-        return redirect(url_for('activityfeed'))
+        return redirect(url_for('browse'))
 
     return render_template('newPost.html', title = 'Post', form=form)
     
@@ -104,7 +131,7 @@ def login():
         if loginUser(email, hashedPassword) :
             signedIn = User(email)
             login_user(signedIn)
-            return redirect(url_for('activityfeed'))
+            return redirect(url_for('browse'))
         else :
             return redirect(url_for('register'))
 
@@ -133,6 +160,12 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/joinactivity/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def joinactivity(activity_id) : # joinactivity = server, joinActivity = sql
+    joinActivityDB(current_user.id, activity_id)
+    return activity(activity_id)
 
 
 @app.route('/profile')

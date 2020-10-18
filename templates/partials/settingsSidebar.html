@@ -1,13 +1,13 @@
 <!--This will be a partial template that can be "included" 
   into other setting pages as an overall navigation-->
-<div class="float-left">
-  <div class="card">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item"><a href="profile.html" class="card-link">Profile</a></li>
-      <li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Profile Settings</a></li>
-      <li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Notifications</a></li>
-      <li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Privacy Settings</a></li>
-      <li class="list-group-item"><a href="/templates/partials/nonexist.html" class="card-link">Security Settings</a></li>
+
+<div class="float-left" style="height: 100%; background: darkgray; border: solid 1px; width: 15vw">
+  <div class="card"style="background-color: darkgray;">
+    <ul class="list-group list-group-flush" style="background: darkgray;">
+      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="{{ url_for('profile')}}" class="card-link">Profile</a></li>
+      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="#" class="card-link">Notifications</a></li>
+      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="#" class="card-link">Privacy Settings</a></li>
+      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="#" class="card-link">Security Settings</a></li>
     </ul>
   </div>
 </div>

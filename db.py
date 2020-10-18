@@ -145,3 +145,38 @@ def getActivity(activity_id):
 
 
 #have return email of validated user
+
+
+def editInfo(username, location,gender,about,interests):
+    inputCommand = "SELECT * FROM userInfo WHERE email = %s"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand, (username))
+
+        rs = statement.fetchone()
+
+        if rs is not None:
+            updateInfo = "UPDATE userInfo SET location = %s, gender = %s, about = %s, interests = %s WHERE email = %s"
+            info = conn.cursor(prepared=True)
+            info.execute(updateInfo, (location,gender,about,interests,username))
+            info.close()
+            conn.close()
+            return True
+
+        else:
+            newInfo = "INSERT INTO userInfo (email,location,gender,about,interest) VALUES (%s,%s,%s,%s,%s)"
+            info = conn.cursor(prepared=True)
+            info.execute(newInfo, (username,location,gender,about,interests))
+            info.close()
+            conn.close()
+            return True
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False

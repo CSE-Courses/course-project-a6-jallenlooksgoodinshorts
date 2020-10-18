@@ -1,6 +1,6 @@
-html{
-    height: 100%;
-    background-image: linear-Gradient(#ffffff,#0085ff);
+html,body {
+    height: auto;
+    background-image: linear-gradient(lightblue, gray);
 }
 
 p {

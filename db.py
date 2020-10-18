@@ -119,12 +119,12 @@ def createActivity(title, description, image): # Needs to be updated for likes
         statement = conn.cursor(prepared=True)
         statement.execute(inputValues, (title,description,image,0)) # Needs to be updated for likes
         conn.commit()
-        rs = statement.fetchone()
+        rs = statement.lastrowid
 
         statement.close()
         conn.close()
 
-        return True
+        return rs
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

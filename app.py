@@ -78,7 +78,7 @@ def activityfeed():
     print(current_user.id, file=sys.stderr)
 
     print("Activity IDs", file=sys.stderr)
-    print(activityIDs[0][0], file=sys.stderr)
+    print(activityIDs, file=sys.stderr)
     if activityIDs[0] :
         for ids in activityIDs:
             activ = getActivity(ids[0])
@@ -123,7 +123,10 @@ def newpost():
         title = form.title.data 
         description = form.body.data
         image = form.image.data.read()
-        createActivity(title, description, image)
+        activity_id = createActivity(title, description, image)
+        print("Activity ID", file=sys.stderr)
+        print(activity_id, file=sys.stderr)
+        joinActivityDB(current_user.id, activity_id)
 
         return redirect(url_for('browse'))
 

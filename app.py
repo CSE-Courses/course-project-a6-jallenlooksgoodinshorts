@@ -72,12 +72,20 @@ def browse():
 @login_required
 def activityfeed():
 
-    activityIDs = getActivityIDs(current_user)
+    activityIDs = getActivityIDs(current_user.id)
     activities = []
-    for ids in activityIDs:
-        activityList = getActivity(ids)
+    print("Current User ID", file=sys.stderr)
+    print(current_user.id, file=sys.stderr)
 
-        for activ in activityList :
+    print("Activity IDs", file=sys.stderr)
+    print(activityIDs[0][0], file=sys.stderr)
+    if activityIDs[0] :
+        for ids in activityIDs:
+            activ = getActivity(ids[0])
+
+            
+            print("ACTIV", file=sys.stderr)
+            print(activ, file=sys.stderr)
             image = b64encode(activ[2]).decode('"utf-8"')
             likes = 0 # Change for likes
 
@@ -88,10 +96,11 @@ def activityfeed():
                 'activity_id': activ[4]
                 }
             activities.append(a)
+    
         
     activities.reverse
 
-    return render_template('browse.html', activities = activities, title = 'Welcome')
+    return render_template('browse.html', activities = activities, title = 'Activities')
 
 @app.route('/activity/<int:activity_id>', methods = ['GET', 'POST'])
 def activity(activity_id):

@@ -176,7 +176,7 @@ def getActivity(activity_id):
         return False
 
 def joinActivityDB(user_id, activity_id) :
-    inputCommand = "INSERT INTO activitymembers VALUES(%s,%s)"
+    inputCommand = "INSERT INTO activitymembers (user_id, activity_id) VALUES(%s,%s)"
     try:
         conn = connect()
         statement = conn.cursor()
@@ -200,7 +200,7 @@ def getActivityIDs(user_id) :
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand, (user_id))
+        statement.execute(inputCommand, (user_id,))
 
         rs = statement.fetchall()
 

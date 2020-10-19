@@ -1,0 +1,46 @@
+{% extends 'head.html' %}
+{% block content %}
+
+<form action="" method="post" enctype="multipart/form-data">
+    <div class="container center_div">
+        <div class="row d-flex justify-content-center">
+            <div class=".col-md-12">
+
+                <h1>Make an Activity</h1>
+                <fieldset class="form-group">
+                    {{ form.hidden_tag() }}
+                    <p>
+                        {{ form.title.label() }}<br>
+                        {{ form.title(class = "form-control form-control-lg") }}<br>
+                        {% for error in form.title.errors %}
+                        <span style="color: red;">
+                            [{{ error }}]
+                        </span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.body.label() }}<br>
+                        {{ form.body(class = "form-control form-control-lg", rows="3") }}<br>
+                        {% for error in form.body.errors %}
+                        <span style="color: red;">
+                            [{{ error }}]
+                        </span>
+                        {% endfor %}
+                    </p>
+                    <div class="form-group">
+                    {{ form.image.label() }}
+                    {{ form.image(class="form-control-file") }}
+                    </div>
+                    <p>
+                    {{ form.submit(class = "btn btn-primary btn-lg") }}
+                    </p>
+                </fieldset>
+
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+{% endblock content %}

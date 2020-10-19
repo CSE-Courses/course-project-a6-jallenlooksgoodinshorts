@@ -24,7 +24,7 @@ def testConn():
         conn.close()
 
 def newUser(email,password,fname,lname,username):
-    inputValues = "INSERT INTO users VALUES(%s,%s,%s,%s,%s);"
+    inputValues = "INSERT INTO users (email, password, fname, lname, username) VALUES(%s,%s,%s,%s,%s);"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)

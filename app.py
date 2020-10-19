@@ -144,9 +144,10 @@ def login():
         if loginUser(email, hashedPassword) :
             signedIn = User(email)
             login_user(signedIn)
-            return redirect(url_for('browse'))
+            return redirect(url_for('activityfeed'))
         else :
-            return redirect(url_for('register'))
+            flash('Incorrect login information. Try again or register for an account', 'error')
+            return redirect(url_for('login'))
 
     return render_template('login.html', title = 'Login', form=form)
 

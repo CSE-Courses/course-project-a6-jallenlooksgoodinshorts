@@ -1,11 +1,16 @@
 {% extends 'head.html' %}
-{% from '_adisplay.html' import activity_display %}
+{% from '_adisplay.html' import activity_display, guest_activity_display %}
 {% block content %}
 
 <div id="post"></div>
-
+{% if current_user.is_authenticated %}
 {% for activity in activities %}
 	{{ activity_display(activity) }}
 {% endfor %}
+{% else %}
+{% for activity in activities %}
+	{{ guest_activity_display(activity) }}
+{% endfor %}
+{% endif %}
 
 {% endblock content %}

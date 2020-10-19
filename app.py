@@ -46,7 +46,6 @@ def home():
     return render_template('home.html', title = 'Home')
 
 @app.route('/browse', methods = ['GET', 'POST'])
-@login_required
 def browse():
 
     activityList = getAllActivities()

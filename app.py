@@ -143,7 +143,7 @@ def login():
         if loginUser(email, hashedPassword) :
             signedIn = User(email)
             login_user(signedIn)
-            return redirect(url_for('activityfeed'))
+            return redirect(url_for('browse'))
         else :
             flash('Incorrect login information. Try again or register for an account', 'error')
             return redirect(url_for('login'))

@@ -79,23 +79,24 @@ def activityfeed():
 
     print("Activity IDs", file=sys.stderr)
     print(activityIDs, file=sys.stderr)
-    if activityIDs[0] :
-        for ids in activityIDs:
-            activ = getActivity(ids[0])
+    if activityIDs :
+        if activityIDs[0] :
+            for ids in activityIDs:
+                activ = getActivity(ids[0])
 
-            
-            print("ACTIV", file=sys.stderr)
-            print(activ, file=sys.stderr)
-            image = b64encode(activ[2]).decode('"utf-8"')
-            likes = 0 # Change for likes
+                
+                print("ACTIV", file=sys.stderr)
+                print(activ, file=sys.stderr)
+                image = b64encode(activ[2]).decode('"utf-8"')
+                likes = 0 # Change for likes
 
-            a = {
-                'title': activ[0],
-                'description': activ[1],
-                'image': image,
-                'activity_id': activ[4]
-                }
-            activities.append(a)
+                a = {
+                    'title': activ[0],
+                    'description': activ[1],
+                    'image': image,
+                    'activity_id': activ[4]
+                    }
+                activities.append(a)
     
         
     activities.reverse

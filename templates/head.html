@@ -7,20 +7,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="Register.css"/>
+    <link rel="stylesheet" type="text/css" href="Register.css" />
     <script src="Register.JS"></script>
     <title>Welcome</title>
 </head>
 
-<body style="background-image: linear-gradient(lightblue, gray);height: 100%; background-repeat: no-repeat; background-attachment: fixed;">
+<body
+    style="background-image: linear-gradient(lightblue, gray);height: 100%; background-repeat: no-repeat; background-attachment: fixed;">
 
     {% if current_user.is_authenticated %}
     <nav class="navbar navbar-light navbar-expand-md justify-content-center" style="background-color: gray">
         <a href="/" class="navbar-brand d-flex w-50 mr-auto">ENTER SITE NAME</a>
-        <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse w-100" id="navbarNavDropdown">
             <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ url_for('home')}}">Browse</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Explore
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="{{ url_for('browse')}}">Browse</a>
+                        <a class="dropdown-item" href="{{ url_for('newpost')}}">Create an activity</a>
+                        <a class="dropdown-item" href="{{ url_for('activityfeed')}}">View my activities</a>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="{{ url_for('profile')}}">
@@ -38,18 +51,12 @@
     {% else %}
     <nav class="navbar navbar-light navbar-expand-md justify-content-center" style="background-color: gray">
         <a href="/" class="navbar-brand d-flex w-50 mr-auto">ENTER SITE NAME</a>
+
         <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
             <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Explore
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                      <a class="dropdown-item" href="{{ url_for('browse')}}">Browse</a>
-                      <a class="dropdown-item" href="{{ url_for('post')}}">Create an activity</a>
-                      <a class="dropdown-item" href="{{ url_for('activityfeed')}}">View my activities</a>
-                    </div>
-                  </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('browse')}}">Register</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="{{ url_for('login')}}">Login</a>
                 </li>
@@ -66,6 +73,16 @@
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
 </body>
 

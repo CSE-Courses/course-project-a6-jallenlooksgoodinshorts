@@ -100,7 +100,7 @@ def activityfeed():
         
     activities.reverse
 
-    return render_template('browse.html', activities = activities, title = 'Activities')
+    return render_template('feed.html', activities = activities, title = 'Activities')
 
 @app.route('/activity/<int:activity_id>', methods = ['GET', 'POST'])
 def activity(activity_id):

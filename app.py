@@ -63,7 +63,7 @@ def browse():
             }
         activities.append(a)
         
-    activities.reverse
+    activities.reverse()
 
     return render_template('browse.html', activities = activities, title = 'Welcome')
 
@@ -98,7 +98,7 @@ def activityfeed():
                 activities.append(a)
     
         
-    activities.reverse
+    activities.reverse()
 
     return render_template('feed.html', activities = activities, title = 'Activities')
 
@@ -178,7 +178,7 @@ def register():
 @login_required
 def joinactivity(activity_id) : # joinactivity = server, joinActivity = sql
     joinActivityDB(current_user.id, activity_id)
-    return activity(activity_id)
+    return redirect(url_for('activityfeed'))
 
 
 @app.route('/profile')

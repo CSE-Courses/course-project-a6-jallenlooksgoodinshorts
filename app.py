@@ -1,15 +1,16 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import loginUser, newUser
-from forms import LoginForm, RegistrationForm
-import db
-from flask_login import LoginManager, login_user, current_user, login_required, UserMixin
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity
+from forms import LoginForm, RegistrationForm, PostForm
+from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
 import sys
+import db
 import os
 import csv
 import secrets
 import gunicorn
+from base64 import b64encode
 
 #Runs Bcrypt on server 
 
@@ -19,9 +20,7 @@ port = int(os.environ.get("PORT", 5000))
 
 login_manager = LoginManager(app)
 
-@login_manager.user_loader
-def load_user(id):
-    return User.get_user(id)
+
 
 class User(UserMixin):
     def __init__(self, id):
@@ -32,7 +31,11 @@ class User(UserMixin):
         user = User(id)
         return user
 
-db.testConn()
+@login_manager.user_loader
+def load_user(id):
+    return User.get_user(id)
+
+testConn()
 
 
 bcrypt = Bcrypt(app)
@@ -42,10 +45,93 @@ bcrypt = Bcrypt(app)
 def home():
     return render_template('home.html', title = 'Home')
 
-@app.route('/welcome')
+@app.route('/browse', methods = ['GET', 'POST'])
+def browse():
+
+    activityList = getAllActivities()
+    activities = []
+
+    for activ in activityList :
+        image = b64encode(activ[2]).decode('"utf-8"')
+        likes = 0 # Change for likes
+
+        a = {
+            'title': activ[0],
+            'description': activ[1],
+            'image': image,
+            'activity_id': activ[4]
+            }
+        activities.append(a)
+        
+    activities.reverse()
+
+    return render_template('browse.html', activities = activities, title = 'Welcome')
+
+@app.route('/activityfeed', methods = ['GET', 'POST'])
 @login_required
-def welcome():
-    return render_template('welcome.html', title = 'Welcome')
+def activityfeed():
+
+    activityIDs = getActivityIDs(current_user.id)
+    activities = []
+    print("Current User ID", file=sys.stderr)
+    print(current_user.id, file=sys.stderr)
+
+    print("Activity IDs", file=sys.stderr)
+    print(activityIDs, file=sys.stderr)
+    if activityIDs :
+        if activityIDs[0] :
+            for ids in activityIDs:
+                activ = getActivity(ids[0])
+
+                
+                print("ACTIV", file=sys.stderr)
+                print(activ, file=sys.stderr)
+                image = b64encode(activ[2]).decode('"utf-8"')
+                likes = 0 # Change for likes
+
+                a = {
+                    'title': activ[0],
+                    'description': activ[1],
+                    'image': image,
+                    'activity_id': activ[4]
+                    }
+                activities.append(a)
+    
+        
+    activities.reverse()
+
+    return render_template('feed.html', activities = activities, title = 'Activities')
+
+@app.route('/activity/<int:activity_id>', methods = ['GET', 'POST'])
+def activity(activity_id):
+    activ = getActivity(activity_id)
+    image = b64encode(activ[2]).decode('"utf-8"')
+    likes = 0 # Change for likes
+    a = {
+        'title': activ[0],
+        'description': activ[1],
+        'image': image,
+        'activity_id': activ[4]
+        }
+    return render_template('activity.html', activity = a, title = 'Activity')
+
+@app.route('/newpost', methods = ['GET', 'POST'])
+@login_required
+def newpost():
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data 
+        description = form.body.data
+        image = form.image.data.read()
+        activity_id = createActivity(title, description, image)
+        print("Activity ID", file=sys.stderr)
+        print(activity_id, file=sys.stderr)
+        joinActivityDB(current_user.id, activity_id)
+
+        return redirect(url_for('browse'))
+
+    return render_template('newPost.html', title = 'Post', form=form)
+    
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -57,26 +143,10 @@ def login():
         if loginUser(email, hashedPassword) :
             signedIn = User(email)
             login_user(signedIn)
-            return redirect(url_for('welcome'))
+            return redirect(url_for('browse'))
         else :
-            return redirect(url_for('register'))
-
-        # valid = False
-
-        # with open('userpass.txt', mode='r') as csvfile:
-        #     readme = csv.reader(csvfile)
-        #     for row in readme:
-        #         if row[0] == email:
-        #             if row[1] == hashedPassword:
-        #                 valid = True
-
-        # signedIn = User(email)
-        # login_user(signedIn)
-
-        # if valid :
-        #     return redirect(url_for('welcome'))
-        # else :
-        #     return redirect(url_for('home'))
+            flash('Incorrect login information. Try again or register for an account', 'error')
+            return redirect(url_for('login'))
 
     return render_template('login.html', title = 'Login', form=form)
 
@@ -91,8 +161,6 @@ def register():
         hashedPassword = form.password.data
         username = form.username.data
 
-        #     print (firstName)
-
         newUser(email, hashedPassword, firstName, lastName, username)
 
         with open('userpass.txt', mode='w') as csvfile:
@@ -105,6 +173,24 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/joinactivity/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def joinactivity(activity_id) : # joinactivity = server, joinActivity = sql
+    joinActivityDB(current_user.id, activity_id)
+    return redirect(url_for('activityfeed'))
+
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', title='Register')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

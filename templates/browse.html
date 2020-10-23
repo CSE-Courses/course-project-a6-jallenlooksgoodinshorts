@@ -1,0 +1,21 @@
+{% extends 'head.html' %}
+{% from '_adisplay.html' import activity_display, guest_activity_display %}
+{% block content %}
+
+<div id="post"></div>
+
+
+<div class="d-flex justify-content-center">
+    <h1>Browse all activities</h1>
+</div>
+{% if current_user.is_authenticated %}
+{% for activity in activities %}
+	{{ activity_display(activity) }}
+{% endfor %}
+{% else %}
+{% for activity in activities %}
+	{{ guest_activity_display(activity) }}
+{% endfor %}
+{% endif %}
+
+{% endblock content %}

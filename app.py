@@ -192,5 +192,13 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=port)
+# Not fully implemented
+
+# @app.route('/likePost/<int:activity_id>', methods = ['GET', 'POST'])
+# @login_required
+# def like_post(activity_id):
+#     addLike(activity_id)
+#     return redirect(url_for('activityfeed'))
+
+# if __name__ == '__main__':
+#     app.run(debug=True, host='0.0.0.0', port=port)

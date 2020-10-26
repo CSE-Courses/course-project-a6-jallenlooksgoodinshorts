@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getInfo
 from forms import LoginForm, RegistrationForm, PostForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -185,7 +185,36 @@ def joinactivity(activity_id) : # joinactivity = server, joinActivity = sql
 @app.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html', title='Register')
+    activityIDs = getActivityIDs(current_user.id)
+    activities = []
+    print("Current User ID", file=sys.stderr)
+    print(current_user.id, file=sys.stderr)
+
+    print("Activity IDs", file=sys.stderr)
+    print(activityIDs, file=sys.stderr)
+    if activityIDs:
+        if activityIDs[0]:
+            for ids in activityIDs:
+                activ = getActivity(ids[0])
+                image = b64encode(activ[2]).decode('"utf-8"')
+                likes = 0  # Change for likes
+
+                a = {
+                    'title': activ[0],
+                    'description': activ[1],
+                    'image': image,
+                    'activity_id': activ[4]
+                }
+                activities.append(a)
+
+    activities.reverse
+
+    i = getInfo(current_user.id)
+    info = {'about':i[0], 'interests':i[1]}
+
+
+    return render_template('profile.html', activities=activities, title='Activities', info=info)
+
 
 @app.route('/logout')
 @login_required

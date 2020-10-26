@@ -24,7 +24,7 @@ def testConn():
         conn.close()
 
 def newUser(email,password,fname,lname,username):
-    inputValues = "INSERT INTO users VALUES(%s,%s,%s,%s,%s);"
+    inputValues = "INSERT INTO users(email, password, fname, lname, username, about, interests) VALUES(%s,%s,%s,%s,%s,'None','None');"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
@@ -251,3 +251,21 @@ def editInfo(username, location,gender,about,interests):
         else:
             conn.close()
         return False
+
+def getInfo(username):
+    inputCommand = "SELECT about, interests FROM users WHERE email = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand, username)
+        rs = statement.fetchone()
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error", file=sys.stderr)
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found", file=sys.stderr)
+        else:
+            conn.close()
+        return ['No database access', 'No database access']

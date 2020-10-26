@@ -1,0 +1,15 @@
+{% extends 'head.html' %}
+{% from '_adisplay.html' import activity_display, guest_activity_display %}
+{% block content %}
+
+<div></div>
+<div class="d-flex justify-content-center">
+    <h1>You are visiting </h1>
+</div>
+
+{% for activity in activities %}
+	{{ activity_display(activity) }}
+{% endfor %}
+
+
+{% endblock content %}

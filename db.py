@@ -252,13 +252,13 @@ def editInfo(username, location,gender,about,interests):
             conn.close()
         return False
 
-def addLike(activity):
-    inputCommand = "UPDATE activities SET likes = likes + 1 WHERE activity_id = (%s)"
+def addLike(title, activity):
+    inputCommand = "UPDATE activities SET likes = likes + 1 WHERE (title = %s AND activity_id = %s)"
     
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand,(activity))
+        statement.execute(inputCommand,(title, (activity)))
         statement.close()
         conn.close()
 
@@ -269,21 +269,19 @@ def addLike(activity):
             print("Database not found")
         else:
             conn.close()
+            return err
 
 def getLikes(activity):
-    inputCommand = "SELECT likes FROM activities WHERE activity_id = (%s)"
+    inputCommand = "SELECT likes FROM activities WHERE activity_id = %s"
 
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand, (activity))
+        statement.execute(inputCommand, (activity,))
         
         rs = statement.fetchone()
 
-        if rs is not None:
-            return rs
-        else:
-            return "no likes"
+        return rs
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

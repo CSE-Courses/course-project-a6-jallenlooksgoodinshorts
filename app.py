@@ -198,7 +198,9 @@ def logout():
 @app.route('/likepost/<int:activity_id>', methods = ['GET', 'POST'])
 @login_required
 def likepost(activity_id):
-    addLike(activity_id)
+    activ = getActivity(activity_id)
+    title = activ[0]
+    addLike(title, activity_id)
     return('', 204)
 
 if __name__ == '__main__':

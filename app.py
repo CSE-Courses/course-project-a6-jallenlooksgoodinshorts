@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getInfo
-from forms import LoginForm, RegistrationForm, PostForm
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getInfo, editInfo
+from forms import LoginForm, RegistrationForm, PostForm, EditForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -182,7 +182,7 @@ def joinactivity(activity_id) : # joinactivity = server, joinActivity = sql
     return activity(activity_id)
 
 
-@app.route('/profile')
+@app.route('/profile', methods = ['GET', 'POST'])
 @login_required
 def profile():
     activityIDs = getActivityIDs(current_user.id)
@@ -210,10 +210,27 @@ def profile():
     activities.reverse
 
     i = getInfo(current_user.id)
-    info = {'about':i[0], 'interests':i[1]}
+    print(i,file=sys.stderr)
+    info = {'about':i[0], 'interests':i[0]}
 
 
     return render_template('profile.html', activities=activities, title='Activities', info=info)
+
+@app.route('/editProfile', methods = ['GET', 'POST'])
+@login_required
+def editinfo():
+    form = EditForm()
+
+    if form.is_submitted() :
+        print(current_user.id,file=sys.stderr)
+        about = form.about.data
+        interests = form.interests.data
+
+        editInfo(current_user.id, about, interests)
+
+        return redirect(url_for('profile'))
+
+    return render_template('editProfile.html', title = 'Edit', form=form)
 
 
 @app.route('/logout')

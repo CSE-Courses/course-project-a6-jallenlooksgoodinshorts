@@ -1,3 +1,6 @@
+{% extends 'head.html' %}
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en" style="height:100%; background-image: linear-Gradient(#ffffff,#0085ff);">
 
@@ -14,7 +17,7 @@
 <body style="height:100%; background-image: linear-Gradient(#ffffff,#0085ff);">
 
  
-
+<form action="" method="post">
     <div class="container">
 
 	      <div class="row form-group">
@@ -23,6 +26,7 @@
 	    <form>
 	      <div class="form-group mx-auto" style="width: 28rem;">
 		<label for="aboutInput">Location:</label>
+
 		<textarea type="text" class="form-control" id="aboutInput"  rows="1" placeholder=""></textarea>
 	      </div>
 	      <div class="form-group mx-auto" style="width: 28rem;">
@@ -45,13 +49,16 @@
 	      <div class="form-group mx-auto" style="width: 28rem;">
 		<label for="aboutInput">About you:</label>
 		<textarea type="text" class="form-control" id="aboutInput"  rows="5" placeholder="Something about yourself"></textarea>
+			  {{ form.about(class="form-control form-control-lg") }}
 	      </div>
 	      <div class="form-group mx-auto" style="width: 28rem;">
 		<label for="activityInput">Activities you're interested in:</label>
 		<textarea type="text" class="form-control" id="activityInput"  rows="5" placeholder="Actvities you like."></textarea>
+			  {{ form.interests(class="form-control form-control-lg") }}
 	      </div>
 	    </form>
-	    	  <a href="#" class="btn btn-primary form-group mx-auto" style="width: 15rem;">Submit</a>
+		  	<p>{{ form.submit(class="btn btn-primary btn-lg") }}</p>
+	    	  <a href="{{ form.submit() }}" class="btn btn-primary form-group mx-auto" style="width: 15rem;">Submit</a>
 	  </div>
 	</div>	
       </div>
@@ -61,8 +68,11 @@
 
 		    
 	
-
+</div>
+</form>
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 </body>
 </html>
+
+{% endblock content %}

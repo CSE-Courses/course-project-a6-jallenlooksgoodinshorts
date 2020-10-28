@@ -218,30 +218,16 @@ def getActivityIDs(user_id) :
 #have return email of validated user
 
 
-def editInfo(username, location,gender,about,interests):
-    inputCommand = "SELECT * FROM userInfo WHERE email = %s"
+def editInfo(username, about, interests):
+    inputCommand = "UPDATE users SET about = (%s), interests = (%s) WHERE email = (%s)"
     try:
         conn = connect()
+
         statement = conn.cursor(prepared=True)
-        statement.execute(inputCommand, (username))
+        statement.execute(inputCommand, (about, interests, username))
+        conn.commit()
 
-        rs = statement.fetchone()
 
-        if rs is not None:
-            updateInfo = "UPDATE userInfo SET location = %s, gender = %s, about = %s, interests = %s WHERE email = %s"
-            info = conn.cursor(prepared=True)
-            info.execute(updateInfo, (location,gender,about,interests,username))
-            info.close()
-            conn.close()
-            return True
-
-        else:
-            newInfo = "INSERT INTO userInfo (email,location,gender,about,interest) VALUES (%s,%s,%s,%s,%s)"
-            info = conn.cursor(prepared=True)
-            info.execute(newInfo, (username,location,gender,about,interests))
-            info.close()
-            conn.close()
-            return True
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -253,19 +239,23 @@ def editInfo(username, location,gender,about,interests):
         return False
 
 def getInfo(username):
-    inputCommand = "SELECT about, interests FROM users WHERE email = (%s)"
+    inputComand = "SELECT about, interests FROM users WHERE email = (%s)"
+    print(username, file=sys.stderr)
     try:
         conn = connect()
+
         statement = conn.cursor(prepared=True)
-        statement.execute(inputCommand, username)
-        rs = statement.fetchone()
-        return rs
+        statement.execute(inputComand, (username,),multi=True) #Doesn't execute statement properly
+
+        return statement.fetchall()
 
     except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR :
             print("Access Denied Error", file=sys.stderr)
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found", file=sys.stderr)
+        elif err:
+            print(err, file=sys.stderr)
         else:
             conn.close()
         return ['No database access', 'No database access']

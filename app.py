@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash
 from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity
-from forms import LoginForm, RegistrationForm, PostForm
+from forms import LoginForm, PostForm, ProfileLookup, RegistrationForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -186,6 +186,14 @@ def register():
 def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
     joinActivityDB(current_user.id, activity_id)
     return redirect(url_for('activityfeed'))
+
+
+@app.route('/searchprofile', methods=['GET', 'POST'])
+@login_required
+def searchprofile():
+    form = ProfileLookup()
+    
+    return render_template('profileSearch.html', title='Lookup', form=form)
 
 
 @app.route('/vprofile/<string:user_id>', methods=['GET', 'POST'])

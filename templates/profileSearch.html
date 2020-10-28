@@ -1,0 +1,28 @@
+{% extends 'head.html' %}
+{% block content %}
+
+<form action="" method="post">
+    <div class="container col-sm-4">
+        <p class="text-center"></p>
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-12">
+                <h1>Look up Profiles</h1>
+                <fieldset class="form-group">
+                    {{ form.hidden_tag() }}
+                    <p>
+                        {{ form.emailcheck.label(class="form-control-label") }}<br>
+                        {{ form.emailcheck(class="form-control form-control-lg") }}<br>
+                        {% for error in form.emailcheck.errors %}
+                        <span style="color: red;">
+                            [{{ error }}]
+                        </span>
+                        {% endfor %}
+                    </p>
+                    <p>{{ form.submit(class="btn btn-primary btn-lg") }}</p>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}

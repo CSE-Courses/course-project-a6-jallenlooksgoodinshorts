@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, addLike, getLikes
 from forms import LoginForm, RegistrationForm, PostForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -53,13 +53,14 @@ def browse():
 
     for activ in activityList :
         image = b64encode(activ[2]).decode('"utf-8"')
-        likes = 0 # Change for likes
+        likes = getLikes(activ[4]) # Changed for likes
 
         a = {
             'title': activ[0],
             'description': activ[1],
             'image': image,
-            'activity_id': activ[4]
+            'activity_id': activ[4],
+            'likes': likes
             }
         activities.append(a)
         
@@ -87,13 +88,14 @@ def activityfeed():
                 print("ACTIV", file=sys.stderr)
                 print(activ, file=sys.stderr)
                 image = b64encode(activ[2]).decode('"utf-8"')
-                likes = 0 # Change for likes
+                likes = getLikes(activ[4]) # Changed for likes
 
                 a = {
                     'title': activ[0],
                     'description': activ[1],
                     'image': image,
-                    'activity_id': activ[4]
+                    'activity_id': activ[4],
+                    'likes': likes
                     }
                 activities.append(a)
     
@@ -106,12 +108,13 @@ def activityfeed():
 def activity(activity_id):
     activ = getActivity(activity_id)
     image = b64encode(activ[2]).decode('"utf-8"')
-    likes = 0 # Change for likes
+    likes = getLikes(activity_id) # Changed for likes
     a = {
         'title': activ[0],
         'description': activ[1],
         'image': image,
-        'activity_id': activ[4]
+        'activity_id': activ[4],
+        'likes': likes
         }
     return render_template('activity.html', activity = a, title = 'Activity')
 
@@ -123,7 +126,7 @@ def newpost():
         title = form.title.data 
         description = form.body.data
         image = form.image.data.read()
-        activity_id = createActivity(title, description, image)
+        activity_id = createActivity(title, description, image, 0)
         print("Activity ID", file=sys.stderr)
         print(activity_id, file=sys.stderr)
         joinActivityDB(current_user.id, activity_id)
@@ -192,13 +195,11 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-# Not fully implemented
+@app.route('/likepost/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def likepost(activity_id):
+    addLike(activity_id)
+    return('', 204)
 
-# @app.route('/likePost/<int:activity_id>', methods = ['GET', 'POST'])
-# @login_required
-# def like_post(activity_id):
-#     addLike(activity_id)
-#     return redirect(url_for('activityfeed'))
-
-# if __name__ == '__main__':
-#     app.run(debug=True, host='0.0.0.0', port=port)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=port)

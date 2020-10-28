@@ -252,13 +252,14 @@ def editInfo(username, location,gender,about,interests):
             conn.close()
         return False
 
-def addLike(title, activity):
+def addLike(title, activity_id):
     inputCommand = "UPDATE activities SET likes = likes + 1 WHERE (title = %s AND activity_id = %s)"
     
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand,(title, (activity)))
+        statement.execute(inputCommand,(title, activity_id))
+        conn.commit()
         statement.close()
         conn.close()
 
@@ -271,13 +272,13 @@ def addLike(title, activity):
             conn.close()
             return err
 
-def getLikes(activity):
+def getLikes(activity_id):
     inputCommand = "SELECT likes FROM activities WHERE activity_id = %s"
 
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand, (activity,))
+        statement.execute(inputCommand, (activity_id,))
         
         rs = statement.fetchone()
 

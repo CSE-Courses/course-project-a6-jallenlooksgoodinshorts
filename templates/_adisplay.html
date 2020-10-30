@@ -13,7 +13,7 @@
         <div class="card-body">
           <p class="card-text" id="descroption">Description:</p>
           <p class="card-text">{{ activity.description }}</p>
-          <p class="card-text">{{ activity.participants }}</p> <!--number of participabts-->
+          <p class="card-text">{{ activity.participants }}</p> <!--number of participants-->
           <a href="{{ url_for('activity', activity_id=activity.activity_id) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">View project</a>
         </div>
       </div>
@@ -38,7 +38,7 @@
         <div class="card-body">
           <p class="card-text" id="descroption">Description:</p>
           <p class="card-text">{{ activity.description }}</p>
-          <p class="card-text">{{ activity.participants }}</p> <!--number of participabts-->
+          <p class="card-text">{{ activity.participants }}</p> <!--number of participants-->
           <a href="{{ url_for('register') }}" type="button" class="btn nav_button_primary btn-primary btn-sm">Create an account to see more</a>
         </div>
       </div>

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity
-from forms import LoginForm, PostForm, ProfileLookup, RegistrationForm
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, findUser
+from forms import LoginForm, PostForm, ProfileLookupForm, RegistrationForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -188,16 +188,19 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
     return redirect(url_for('activityfeed'))
 
 
-@app.route('/searchprofile', methods=['GET', 'POST'])
+@app.route('/profilesearch', methods=['GET', 'POST'])
 @login_required
 def searchprofile():
-    form = ProfileLookup()
-    
-    return render_template('profileSearch.html', title='Lookup', form=form)
+    form = ProfileLookupForm()
+    if form.validate_on_submit():
+        profileResult = findUser(form.accproperty.data)
+        return render_template('profilesearch.html', title='search', profileResult=profileResult, form=form)
+
+    return render_template('profilesearch.html', title='search', form=form)
 
 
-@app.route('/vprofile/<string:user_id>', methods=['GET', 'POST'])
-@login_required
+@ app.route('/otherprofile/<string:user_id>', methods=['GET', 'POST'])
+@ login_required
 def vprofile(user_id):
     activityIDs = getActivityIDs(user_id)
     activities = []
@@ -226,17 +229,17 @@ def vprofile(user_id):
 
     activities.reverse()
 
-    return render_template('feed.html', activities=activities, title='Activities')
+    return render_template('otherprofile.html', activities=activities, title='Activities')
 
 
-@app.route('/profile')
-@login_required
+@ app.route('/profile')
+@ login_required
 def profile():
     return render_template('profile.html', title='Register')
 
 
-@app.route('/logout')
-@login_required
+@ app.route('/logout')
+@ login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))

@@ -19,8 +19,8 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
 
-class ProfileLookup(FlaskForm):
-    accountfield = StringField('AccountData', validators=[(DataRequired())])
+class ProfileLookupForm(FlaskForm):
+    accproperty = StringField('Enter the Account Name', validators=[(DataRequired())])
     submit = SubmitField("Look Up")
 
 

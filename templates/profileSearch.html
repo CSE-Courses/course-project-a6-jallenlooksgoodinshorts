@@ -1,4 +1,5 @@
 {% extends 'head.html' %}
+{% from '_pdisplay.html' import profile_display %}
 {% block content %}
 
 <form action="" method="post">
@@ -10,19 +11,26 @@
                 <fieldset class="form-group">
                     {{ form.hidden_tag() }}
                     <p>
-                        {{ form.emailcheck.label(class="form-control-label") }}<br>
-                        {{ form.emailcheck(class="form-control form-control-lg") }}<br>
-                        {% for error in form.emailcheck.errors %}
-                        <span style="color: red;">
-                            [{{ error }}]
-                        </span>
+                        {{ form.accproperty.label(class="form-control-label") }}<br>
+                        {{ form.accproperty(class="form-control form-control-lg") }}<br>
+                        {% for error in form.accproperty.errors %}
+                            <span style="color: red;">
+                                [{{ error }}]
+                            </span>
                         {% endfor %}
                     </p>
-                    <p>{{ form.submit(class="btn btn-primary btn-lg") }}</p>
+
+                    <p>{{ form.submit(class="btn btn-primary btn-sm") }}</p>
                 </fieldset>
             </div>
         </div>
     </div>
 </form>
+
+{% for item in profileResult %}
+    {% for i in item %}
+        {{ profile_display(i) }}
+    {% endfor %}
+{% endfor %}
 
 {% endblock content %}

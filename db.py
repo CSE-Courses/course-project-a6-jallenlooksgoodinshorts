@@ -228,27 +228,17 @@ def getActivityIDs(user_id):
 
 
 def findUser(profileRef):
-    inputCommand = "SELECT * FROM users WHERE email = %s or fname = %s or username = %s"
+    inputCommand = "SELECT email FROM users WHERE email = (%s) OR fname = (%s) OR username = (%s)"
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand, (profileRef,))
+        statement.execute(inputCommand, (profileRef, profileRef, profileRef,))
 
         rs = statement.fetchall()
 
-        if rs is not None:
-            print("Profile Found")
-            statement.close()
-            conn.close()
-
-            return True
-        else:
-            print("Profile does not Exist")
-
-            statement.close()
-            conn.close()
-
-            return False
+        statement.close()
+        conn.close()
+        return rs
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

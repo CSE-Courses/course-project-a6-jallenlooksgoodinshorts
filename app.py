@@ -53,7 +53,8 @@ def browse():
 
     for activ in activityList :
         image = b64encode(activ[2]).decode('"utf-8"')
-        likes = getLikes(activ[4]) # Changed for likes
+        likeTup = getLikes(activ[4]) # Changed for likes
+        likes = likeTup[0]
 
         a = {
             'title': activ[0],
@@ -88,7 +89,8 @@ def activityfeed():
                 print("ACTIV", file=sys.stderr)
                 print(activ, file=sys.stderr)
                 image = b64encode(activ[2]).decode('"utf-8"')
-                likes = getLikes(activ[4]) # Changed for likes
+                likeTup = getLikes(activ[4]) # Changed for likes
+                likes = likeTup[0]
 
                 a = {
                     'title': activ[0],
@@ -108,7 +110,8 @@ def activityfeed():
 def activity(activity_id):
     activ = getActivity(activity_id)
     image = b64encode(activ[2]).decode('"utf-8"')
-    likes = getLikes(activity_id) # Changed for likes
+    likeTup = getLikes(activity_id) # Changed for likes
+    likes = likeTup[0]
     a = {
         'title': activ[0],
         'description': activ[1],

@@ -116,6 +116,26 @@ def getUser(username):
         return False
 
 
+def userInfo(username):
+    inputCommand = "SELECT email, fname, lname, username FROM users WHERE email = %s OR fname = (%s) OR username = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (username, username, username,))
+
+        rs = statement.fetchall()
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
+
 def createActivity(title, description, image):  # Needs to be updated for likes
     inputValues = "INSERT INTO activities (title, description, image, likes) VALUES(%s,%s,%s,%s);"
     try:
@@ -225,29 +245,6 @@ def getActivityIDs(user_id):
         return False
 
 # have return email of validated user
-
-
-def findUser(profileRef):
-    inputCommand = "SELECT email FROM users WHERE email = (%s) OR fname = (%s) OR username = (%s)"
-    try:
-        conn = connect()
-        statement = conn.cursor()
-        statement.execute(inputCommand, (profileRef, profileRef, profileRef,))
-
-        rs = statement.fetchall()
-
-        statement.close()
-        conn.close()
-        return rs
-
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Access Denied Error")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database not found")
-        else:
-            conn.close()
-        return False
 
 
 def editInfo(username, location, gender, about, interests):

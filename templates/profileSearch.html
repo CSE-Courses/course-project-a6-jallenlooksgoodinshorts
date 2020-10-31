@@ -27,10 +27,8 @@
     </div>
 </form>
 
-{% for item in profileResult %}
-    {% for i in item %}
-        {{ profile_display(i) }}
-    {% endfor %}
+{% for item in returnedInfo %}
+    {{ profile_display(item) }}
 {% endfor %}
 
 {% endblock content %}

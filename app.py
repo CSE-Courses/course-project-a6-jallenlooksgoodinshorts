@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, findUser
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo
 from forms import LoginForm, PostForm, ProfileLookupForm, RegistrationForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -192,9 +192,17 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
 @login_required
 def searchprofile():
     form = ProfileLookupForm()
+
+    print("Search Input")
+    print(form, file=sys.stderr)
+
     if form.validate_on_submit():
-        profileResult = findUser(form.accproperty.data)
-        return render_template('profilesearch.html', title='search', profileResult=profileResult, form=form)
+        returnedInfo = userInfo(form.accproperty.data)
+
+        print("Returned Info Result")
+        print(returnedInfo, file=sys.stderr)
+
+        return render_template('profilesearch.html', title='search', form=form, returnedInfo=returnedInfo)
 
     return render_template('profilesearch.html', title='search', form=form)
 
@@ -203,6 +211,7 @@ def searchprofile():
 @ login_required
 def vprofile(user_id):
     activityIDs = getActivityIDs(user_id)
+    returnedInfo = userInfo(user_id)
     activities = []
     print("User ID", file=sys.stderr)
     print(user_id, file=sys.stderr)
@@ -229,7 +238,7 @@ def vprofile(user_id):
 
     activities.reverse()
 
-    return render_template('otherprofile.html', activities=activities, title='Activities')
+    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo)
 
 
 @ app.route('/profile')

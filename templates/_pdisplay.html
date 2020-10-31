@@ -1,10 +1,15 @@
 {% macro profile_display(profile) -%}
 
-<br>
-
-<div class="container col-6">
-  <div class="card mb-3">
-      <a href="{{ url_for('vprofile' , user_id = profile) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">{{ profile }}</a>
+<div class = "container col-6" >
+  <div class="col-mb-3">
+      <div class = "card border-dark mb-3" >
+        <div class="card text-center" style="background-color: lightgray;">
+          <div class="card-body text-dark">
+            <h5 class="card-title">{{ profile[1] }} {{ profile[2] }}</h5>
+            <a href="{{ url_for('vprofile' , user_id = profile[0]) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">Click here to Visit {{ profile[3] }}</a>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 

@@ -117,7 +117,7 @@ def getUser(username):
 
 
 def userInfo(username):
-    inputCommand = "SELECT email, fname, lname, username FROM users WHERE email = %s OR fname = (%s) OR username = (%s)"
+    inputCommand = "SELECT email, fname, lname, username, about, interests FROM users WHERE email = %s OR fname = (%s) OR username = (%s)"
     try:
         conn = connect()
         statement = conn.cursor()

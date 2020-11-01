@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getActivityUsers
 from forms import LoginForm, PostForm, ProfileLookupForm, RegistrationForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -188,26 +188,25 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
     return redirect(url_for('activityfeed'))
 
 
-@app.route('/profilesearch', methods=['GET', 'POST'])
-@app.route('listmembers/<int:activity_id>', methods = ['GET', 'POST'])
+@app.route('/listmembers/<int:activity_id>', methods=['GET', 'POST'])
 @login_required
-def listmembers(activity_id) :
+def listmembers(activity_id):
     users = getActivityUsers(activity_id)
 
     profiles = []
     for user_id in users:
         a = {
-            'username' = user_id
-            }
+            'username': user_id
+        }
         profiles.append(a)
-    
-        
+
     profiles.reverse()
-    
-    render_template('profilelistdisplay.html', title = "Joined Members", profiles = profiles)
+
+    render_template('profilelistdisplay.html',
+                    title="Joined Members", profiles=profiles)
 
 
-@app.route('/profile')
+@app.route('/profileinquiry', methods=['GET', 'POST'])
 @login_required
 def searchprofile():
     form = ProfileLookupForm()
@@ -221,9 +220,9 @@ def searchprofile():
         print("Returned Info Result")
         print(returnedInfo, file=sys.stderr)
 
-        return render_template('profilesearch.html', title='search', form=form, returnedInfo=returnedInfo)
+        return render_template('profileinquiry.html', title='search', form=form, returnedInfo=returnedInfo)
 
-    return render_template('profilesearch.html', title='search', form=form)
+    return render_template('profileinquiry.html', title='search', form=form)
 
 
 @ app.route('/otherprofile/<string:user_id>', methods=['GET', 'POST'])

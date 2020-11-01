@@ -229,8 +229,7 @@ def getActivityUsers(activity_id) :
         conn = connect()
         statement = conn.cursor()
         statement.execute(inputCommand, (activity_id))
-        conn.commit()
-        rs = statement.fetchone()
+        rs = statement.fetchall()
 
         return rs
 

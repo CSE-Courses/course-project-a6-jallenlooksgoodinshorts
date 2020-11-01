@@ -181,6 +181,12 @@ def joinactivity(activity_id) : # joinactivity = server, joinActivity = sql
     return redirect(url_for('activityfeed'))
 
 
+@app.route('listmembers/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def listmembers(activity_id) :
+    #really stuck here
+
+
 @app.route('/profile')
 @login_required
 def profile():

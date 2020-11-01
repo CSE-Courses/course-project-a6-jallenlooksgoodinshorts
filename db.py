@@ -223,8 +223,27 @@ def joinActivityDB(user_id, activity_id):
             conn.close()
         return False
 
+def getActivityUsers(activity_id) :
+    inputCommand = "SELECT user_id FROM activitymembers WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (activity_id))
+        conn.commit()
+        rs = statement.fetchone()
 
-def getActivityIDs(user_id):
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
+def getActivityIDs(user_id) :
     inputCommand = "SELECT activity_id FROM activitymembers WHERE user_id = (%s)"
     try:
         conn = connect()
@@ -246,8 +265,7 @@ def getActivityIDs(user_id):
 
 # have return email of validated user
 
-
-def editInfo(username, location, gender, about, interests):
+def editInfo(username, location,gender,about,interests):
     inputCommand = "SELECT * FROM userInfo WHERE email = %s"
     try:
         conn = connect()

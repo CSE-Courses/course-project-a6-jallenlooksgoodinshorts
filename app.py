@@ -189,25 +189,6 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
     return redirect(url_for('activityfeed'))
 
 
-@app.route('/listmembers/<int:activity_id>', methods=['GET', 'POST'])
-@login_required
-def listmembers(activity_id):
-    users = getActivityUsers(activity_id)
-    print("USER VALUE                                            ", flush=True)
-    print(users, flush=True)
-    profiles = []
-    for user_id in users:
-        a = {
-            'username': user_id
-        }
-        profiles.append(a)
-
-    profiles.reverse()
-
-    render_template('profilelistdisplay.html',
-                    title="Joined Members", profiles=profiles)
-
-
 @app.route('/profileinquiry', methods=['GET', 'POST'])
 @login_required
 def searchprofile():

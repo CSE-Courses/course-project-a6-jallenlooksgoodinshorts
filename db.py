@@ -211,7 +211,7 @@ def joinActivityDB(user_id, activity_id):
         statement.execute(inputCommand, (user_id, activity_id))
         conn.commit()
         rs = statement.fetchone()
-    
+
         return rs
 
     except mysql.connector.Error as err:
@@ -223,14 +223,17 @@ def joinActivityDB(user_id, activity_id):
             conn.close()
         return False
 
-def getActivityUsers(activity_id) :
+
+def getActivityUsers(activity_id):
     inputCommand = "SELECT user_id FROM activitymembers WHERE activity_id = (%s)"
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand, (activity_id))
-        rs = statement.fetchall()
+        statement.execute(inputCommand, (activity_id,))
 
+        rs = statement.fetchall()
+        print("ASDASDASDASDASD", flush=True)
+        print(rs, flush=True)
         return rs
 
     except mysql.connector.Error as err:
@@ -242,7 +245,8 @@ def getActivityUsers(activity_id) :
             conn.close()
         return False
 
-def getActivityIDs(user_id) :
+
+def getActivityIDs(user_id):
     inputCommand = "SELECT activity_id FROM activitymembers WHERE user_id = (%s)"
     try:
         conn = connect()
@@ -264,12 +268,13 @@ def getActivityIDs(user_id) :
 
 # have return email of validated user
 
-def editInfo(username, location,gender,about,interests):
+
+def editInfo(username, location, gender, about, interests):
     inputCommand = "SELECT * FROM userInfo WHERE email = %s"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
-        statement.execute(inputCommand, (username))
+        statement.execute(inputCommand, (username,))
 
         rs = statement.fetchone()
 

@@ -26,7 +26,9 @@
 </div>
 
 {% for item in members %}
-	{{ (profilelist_display(item)) }}
+  {% for i in item %}
+	  {{ (profilelist_display(i)) }}
+  {% endfor %}
 {% endfor %}
 
 

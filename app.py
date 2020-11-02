@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, addLike, getLikes
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, addLike, getLikes, checkLikeDB, removeLike
 from forms import LoginForm, RegistrationForm, PostForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -203,8 +203,21 @@ def logout():
 def likepost(activity_id):
     activ = getActivity(activity_id)
     title = activ[0]
-    addLike(title, activity_id)
+    addLike(title, current_user.id, activity_id)
     return('', 204)
+
+@app.route('/unlikepost/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def unlikepost(activity_id):
+    activ = getActivity(activity_id)
+    removeLike(current_user.id, activity_id)
+    return('', 204)
+
+@app.route('/checklike<int:user_id>/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def checklike(user_id, activity_id):
+    likeStatus = checkLikeDB(user_id, activity_id)
+    return likeStatus
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

@@ -25,8 +25,8 @@ class PostForm(FlaskForm):
 class EditForm(FlaskForm):
     location = StringField('Location', validators=[DataRequired()])
     gender = StringField('Gender', validators=[DataRequired()])
-    email = StringField('email', validators=[DataRequired()])
-    about = StringField('About')
-    interests = StringField('Interests')
+    #email = StringField('email', validators=[DataRequired()])
+    about = StringField('About', validators=[DataRequired()])
+    interests = StringField('Interests', validators=[DataRequired()])
     submit = SubmitField('Edit Info')
 

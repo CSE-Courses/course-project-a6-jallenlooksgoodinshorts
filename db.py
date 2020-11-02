@@ -253,14 +253,17 @@ def getActivityIDs(user_id) :
 #have return email of validated user
 
 
-def editInfo(username, about, interests):
-    inputCommand = "UPDATE users SET about = %s, interests = %s WHERE email = (%s)"
+def editInfo(username, about, interests, location, gender):
+    inputCommand = "UPDATE users SET about = %s, interests = %s, location = %s, gender = %s WHERE email = (%s)"
     try:
         conn = connect()
 
         statement = conn.cursor(prepared=True)
-        statement.execute(inputCommand, (about, interests, username,))
+        statement.execute(inputCommand, (about, interests, location, gender, username,))
         conn.commit()
+        rs = statement
+        print(rs,file=sys.stderr)
+        conn.close()
 
 
 

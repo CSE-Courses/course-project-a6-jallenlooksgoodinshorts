@@ -230,18 +230,20 @@ def profile():
 def editinfo():
     form = EditForm()
 
-    if form.is_submitted() :
+    if form.validate_on_submit():
         print(current_user.id,file=sys.stderr)
-        about = form.about
+        about = form.about.data
         interests = form.interests.data
+        location = form.location.data
+        gender = form.gender.data
         print(about,file=sys.stderr)
         print(interests, file=sys.stderr)
-        print("print")
 
-        editInfo(current_user.id, about, interests)
 
+        editInfo(current_user.id, about, interests, location, gender)
+        print(form.errors,file=sys.stderr)
         return redirect(url_for('profile'))
-
+    print(form.errors,file=sys.stderr)
     return render_template('editProfile.html', title = 'Edit', form=form)
 
 

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getInfo, editInfo
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getInfo, editInfo, likeActivity
 from forms import LoginForm, RegistrationForm, PostForm, EditForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -112,7 +112,8 @@ def activity(activity_id):
         'title': activ[0],
         'description': activ[1],
         'image': image,
-        'activity_id': activ[4]
+        'activity_id': activ[4],
+        'likes': activ[3]
         }
     return render_template('activity.html', activity = a, title = 'Activity')
 
@@ -182,6 +183,14 @@ def joinactivity(activity_id) : # joinactivity = server, joinActivity = sql
     return activity(activity_id)
 
 
+@app.route('/likeactiivity/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def likeactivity(activity_id) :
+    likeActivity(activity_id)
+    return activity(activity_id)
+
+
+
 @app.route('/profile', methods = ['GET', 'POST'])
 @login_required
 def profile():
@@ -211,7 +220,7 @@ def profile():
 
     i = getInfo(current_user.id)
     print(i,file=sys.stderr)
-    info = {'about':i[0], 'interests':i[0]}
+    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
 
 
     return render_template('profile.html', activities=activities, title='Activities', info=info)
@@ -223,8 +232,11 @@ def editinfo():
 
     if form.is_submitted() :
         print(current_user.id,file=sys.stderr)
-        about = form.about.data
+        about = form.about
         interests = form.interests.data
+        print(about,file=sys.stderr)
+        print(interests, file=sys.stderr)
+        print("print")
 
         editInfo(current_user.id, about, interests)
 

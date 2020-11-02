@@ -195,6 +195,41 @@ def joinActivityDB(user_id, activity_id) :
             conn.close()
         return False
 
+def likeActivity(activity_id):
+    getCommand = "SELECT likes FROM activities WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(getCommand, (activity_id,))
+        rs = statement.fetchone()
+        likes = rs[0]
+        likes = (likes + 1)
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+    inputCommand = "UPDATE activities SET likes = %s WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (likes,activity_id,))
+        conn.commit()
+        return rs[0]
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
 def getActivityIDs(user_id) :
     inputCommand = "SELECT activity_id FROM activitymembers WHERE user_id = (%s)"
     try:
@@ -219,12 +254,12 @@ def getActivityIDs(user_id) :
 
 
 def editInfo(username, about, interests):
-    inputCommand = "UPDATE users SET about = (%s), interests = (%s) WHERE email = (%s)"
+    inputCommand = "UPDATE users SET about = %s, interests = %s WHERE email = (%s)"
     try:
         conn = connect()
 
         statement = conn.cursor(prepared=True)
-        statement.execute(inputCommand, (about, interests, username))
+        statement.execute(inputCommand, (about, interests, username,))
         conn.commit()
 
 
@@ -234,18 +269,20 @@ def editInfo(username, about, interests):
             print("Access Denied Error")
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
+        elif err:
+            print(err, file=sys.stderr)
         else:
             conn.close()
         return False
 
 def getInfo(username):
-    inputComand = "SELECT about, interests FROM users WHERE email = (%s)"
+    inputComand = "SELECT about, interests, location, gender, email FROM users WHERE email = (%s)"
     print(username, file=sys.stderr)
     try:
         conn = connect()
 
         statement = conn.cursor(prepared=True)
-        statement.execute(inputComand, (username,),multi=True) #Doesn't execute statement properly
+        statement.execute(inputComand, (username,),multi=True)
 
         return statement.fetchall()
 

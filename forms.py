@@ -21,3 +21,12 @@ class PostForm(FlaskForm):
     body = StringField('Body', validators=[DataRequired()])
     image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg'])])
     submit = SubmitField('Create Activity')
+
+class EditForm(FlaskForm):
+    location = StringField('Location', validators=[DataRequired()])
+    gender = StringField('Gender', validators=[DataRequired()])
+    email = StringField('email', validators=[DataRequired()])
+    about = StringField('About')
+    interests = StringField('Interests')
+    submit = SubmitField('Edit Info')
+

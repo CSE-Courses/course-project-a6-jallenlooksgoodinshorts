@@ -192,7 +192,8 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
 @login_required
 def listmembers(activity_id):
     users = getActivityUsers(activity_id)
-
+    print("USER VALUE                                              ", flush=True)
+    print(users, flush=True)
     profiles = []
     for user_id in users:
         a = {

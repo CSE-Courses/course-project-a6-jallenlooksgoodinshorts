@@ -230,7 +230,7 @@ def getActivityUsers(activity_id) :
         statement = conn.cursor()
         statement.execute(inputCommand, (activity_id))
         rs = statement.fetchall()
-
+        
         return rs
 
     except mysql.connector.Error as err:

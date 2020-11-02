@@ -1,0 +1,29 @@
+{% extends 'head.html' %}
+{% from '_adisplay.html' import activity_display, guest_activity_display %}
+{% block content %}
+
+<div class="float-left" style="height: 100%; background: lightgray; width: 15rem">
+    <h5>
+        {{ returnedInfo[0][1]}} {{ returnedInfo[0][2]}} <br>
+        About: {{ returnedInfo[0][4] }} <br>
+        Interests: {{ returnedInfo[0][5] }} <br>
+    </h5>
+</div>
+
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <h1>Activies {{ returnedInfo[0][1]}} Currently Follows:</h1>
+    </div> 
+</div>
+
+
+
+
+
+
+{% for activity in activities %}
+	{{ activity_display(activity) }}
+{% endfor %}
+
+
+{% endblock content %}

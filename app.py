@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getActivityUsers
-from forms import LoginForm, PostForm, ProfileLookupForm, RegistrationForm
+from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
+from db import getActivity, getActivityIDs, getAllActivities, getcomments, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getActivityUsers, writecomment
+from forms import LoginForm, PostForm, ProfileLookupForm, RegistrationForm, CommentForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -8,6 +8,7 @@ import sys
 import db
 import os
 import csv
+import json
 import secrets
 import gunicorn
 from base64 import b64encode
@@ -117,7 +118,30 @@ def activity(activity_id):
         'image': image,
         'activity_id': activ[4]
     }
-    return render_template('activity.html', activity=a, title='Activity', members=members)
+
+    dbcomments = getcomments(activity_id)
+    comments = []
+    if dbcomments:
+        if dbcomments[0]:
+            for comms in dbcomments:
+                c = {
+                    'username': userInfo(comms[1][1]),
+                    'body': comms[2]
+                }
+                comments.append(c)
+    
+    form = CommentForm()
+
+    print("-------- PRE FORM ----------", file=sys.stderr)
+    if form.validate_on_submit():
+        body = form.comment.data
+        print("Activity ID --------------- Comment", file=sys.stderr)
+        writecomment(current_user.id, activity_id, body)
+
+        return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form)
+
+
+    return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form)
 
 
 @app.route('/newpost', methods=['GET', 'POST'])
@@ -136,6 +160,15 @@ def newpost():
         return redirect(url_for('browse'))
 
     return render_template('newPost.html', title='Post', form=form)
+
+@app.route('/newcomment', methods=['GET', 'POST'])
+@login_required
+def newcomment(activity_id):
+    form = CommentForm()
+    if form.validate_on_submit():
+        body = form.body.data
+
+    #FILL IN WITH DIRECTION TO ACTIVITY ID
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -253,7 +286,6 @@ def profile():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

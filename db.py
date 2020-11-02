@@ -304,3 +304,43 @@ def editInfo(username, location, gender, about, interests):
         else:
             conn.close()
         return False
+
+def writecomment(user_id, activity_id, body):
+    inputCommand = "INSERT INTO comments (user_id, activity_id, body) VALUES(%s,%s,%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (user_id, activity_id, body))
+        conn.commit()
+        rs = statement.fetchone()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
+def getcomments(activity_id):
+    inputCommand = "SELECT activity_id, user_id, body FROM comments WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (activity_id,))
+
+        rs = statement.fetchall()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False

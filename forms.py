@@ -30,6 +30,17 @@ class PostForm(FlaskForm):
     image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg'])])
     submit = SubmitField('Create Activity')
 
+<<<<<<< HEAD
 class CommentForm(FlaskForm):
     comment = TextAreaField('Comment', validators=[InputRequired()])
     submit = SubmitField('Submit')
+=======
+class EditForm(FlaskForm):
+    location = StringField('Location', validators=[DataRequired()])
+    gender = StringField('Gender', validators=[DataRequired()])
+    email = StringField('email', validators=[DataRequired()])
+    about = StringField('About')
+    interests = StringField('Interests')
+    submit = SubmitField('Edit Info')
+
+>>>>>>> 73e5ab5db90db5e90c6b4c495d2ed2a00ef309ac

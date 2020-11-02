@@ -150,6 +150,7 @@ def activity(activity_id):
     return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form)
 
 
+
 @app.route('/newpost', methods=['GET', 'POST'])
 @login_required
 def newpost():
@@ -219,6 +220,16 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
     return redirect(url_for('activityfeed'))
 
 
+
+@app.route('/likeactiivity/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def likeactivity(activity_id) :
+    likeActivity(activity_id)
+    return activity(activity_id)
+
+
+
+
 @app.route('/profileinquiry', methods=['GET', 'POST'])
 @login_required
 def searchprofile():
@@ -275,7 +286,56 @@ def vprofile(user_id):
 @ app.route('/profile')
 @ login_required
 def profile():
-    return render_template('profile.html', title='Register')
+    activityIDs = getActivityIDs(current_user.id)
+    activities = []
+    print("Current User ID", file=sys.stderr)
+    print(current_user.id, file=sys.stderr)
+
+    print("Activity IDs", file=sys.stderr)
+    print(activityIDs, file=sys.stderr)
+    if activityIDs:
+        if activityIDs[0]:
+            for ids in activityIDs:
+                activ = getActivity(ids[0])
+                image = b64encode(activ[2]).decode('"utf-8"')
+                likes = 0  # Change for likes
+
+                a = {
+                    'title': activ[0],
+                    'description': activ[1],
+                    'image': image,
+                    'activity_id': activ[4]
+                }
+                activities.append(a)
+
+    activities.reverse
+
+    i = getInfo(current_user.id)
+    print(i,file=sys.stderr)
+    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+
+
+    return render_template('profile.html', activities=activities, title='Activities', info=info)
+
+@app.route('/editProfile', methods = ['GET', 'POST'])
+@login_required
+def editinfo():
+    form = EditForm()
+
+    if form.is_submitted() :
+        print(current_user.id,file=sys.stderr)
+        about = form.about
+        interests = form.interests.data
+        print(about,file=sys.stderr)
+        print(interests, file=sys.stderr)
+        print("print")
+
+        editInfo(current_user.id, about, interests)
+
+        return redirect(url_for('profile'))
+
+    return render_template('editProfile.html', title = 'Edit', form=form)
+
 
 
 @ app.route('/logout')

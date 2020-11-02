@@ -1,4 +1,5 @@
 {% extends 'head.html' %}
+{% from 'profilelistdisplay.html' import profilelist_display %}
 
 {% block content %}
 
@@ -23,6 +24,11 @@
         </div>
     </div>
 </div>
+
+{% for item in members %}
+	{{ (profilelist_display(item)) }}
+{% endfor %}
+
 
 {% endblock content %}
 

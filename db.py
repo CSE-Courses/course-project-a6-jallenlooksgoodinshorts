@@ -211,7 +211,7 @@ def joinActivityDB(user_id, activity_id):
         statement.execute(inputCommand, (user_id, activity_id))
         conn.commit()
         rs = statement.fetchone()
-
+    
         return rs
 
     except mysql.connector.Error as err:
@@ -230,7 +230,7 @@ def getActivityUsers(activity_id) :
         statement = conn.cursor()
         statement.execute(inputCommand, (activity_id))
         rs = statement.fetchall()
-        
+
         return rs
 
     except mysql.connector.Error as err:

@@ -31,10 +31,13 @@ class PostForm(FlaskForm):
     submit = SubmitField('Create Activity')
 
 class EditForm(FlaskForm):
-    location = StringField('Location', validators=[DataRequired()])
-    gender = StringField('Gender', validators=[DataRequired()])
-    email = StringField('email', validators=[DataRequired()])
+    location = StringField('Location')
+    gender = StringField('Gender')
     about = StringField('About')
     interests = StringField('Interests')
     submit = SubmitField('Edit Info')
+
+class ChangeProfilePicture(FlaskForm):
+    picture = FileField('Profile Picture', validators=[DataRequired(), FileAllowed(['jpg','jpeg'])])
+    submit = SubmitField('Change Profile Picture')
 

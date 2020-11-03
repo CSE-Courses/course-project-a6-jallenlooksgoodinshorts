@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, likeActivity, getActivityUsers, changeProfPic, getPic
-from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture
+from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, likeActivity, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment
+from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -8,6 +8,8 @@ import sys
 import db
 import os
 import csv
+import time
+import json
 import secrets
 import gunicorn
 from base64 import b64encode
@@ -115,11 +117,37 @@ def activity(activity_id):
         'title': activ[0],
         'description': activ[1],
         'image': image,
-        'activity_id': activ[4],
-        'likes': activ[3]
-        }
+        'activity_id': activ[4]
+    }
 
-    return render_template('activity.html', activity=a, title='Activity', members=members)
+    dbcomments = getcomments(activity_id)
+    comments = []
+    if dbcomments:
+        if dbcomments[0]:
+            for comms in dbcomments:
+                fname = firstNameUser(comms[1])
+                print("USER ID --------------- Comment", file=sys.stderr)
+                print(comms, file=sys.stderr)
+                print(fname, file=sys.stderr)
+                c = {
+                    'username': firstNameUser(comms[1]),
+                    'body': comms[2]
+                }
+                comments.append(c)
+    
+    form = CommentForm()
+
+    print("-------- PRE FORM ----------", file=sys.stderr)
+    if form.validate_on_submit():
+        body = form.comment.data
+        print("Activity ID --------------- Comment", file=sys.stderr)
+        print(current_user.id, file=sys.stderr)
+        buff = writecomment(current_user.id, activity_id, body)
+        url_for('activity', activity_id=activity_id)
+        
+
+
+    return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form)
 
 
 
@@ -344,7 +372,6 @@ def editProfPic():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

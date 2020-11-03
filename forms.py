@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, IntegerField, TextAreaField, SubmitField, BooleanField, SelectField
-from wtforms.validators import DataRequired, Length, EqualTo, Email
+from wtforms.validators import DataRequired, Length, EqualTo, Email, InputRequired
 
 
 class LoginForm(FlaskForm):
@@ -26,10 +26,14 @@ class ProfileLookupForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    body = StringField('Body', validators=[DataRequired()])
+    body = TextAreaField('Body', validators=[DataRequired()])
     image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg'])])
     submit = SubmitField('Create Activity')
 
+class CommentForm(FlaskForm):
+    comment = TextAreaField('Comment', validators=[InputRequired()])
+    submit = SubmitField('Submit')
+    
 class EditForm(FlaskForm):
     location = StringField('Location')
     gender = StringField('Gender')

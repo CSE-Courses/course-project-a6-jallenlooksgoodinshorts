@@ -150,6 +150,25 @@ def userInfo(username):
             conn.close()
         return False
 
+def firstNameUser(user_id):
+    inputCommand = "SELECT fname FROM users WHERE email = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (user_id,))
+
+        rs = statement.fetchall()
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
 
 def createActivity(title, description, image):  # Needs to be updated for likes
     inputValues = "INSERT INTO activities (title, description, image, likes) VALUES(%s,%s,%s,%s);"
@@ -345,6 +364,47 @@ def editInfo(username, about, interests, location, gender):
             conn.close()
         return False
 
+
+def writecomment(user_id, activity_id, body):
+    inputCommand = "INSERT INTO comments (user_id, activity_id, body) VALUES(%s,%s,%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (user_id, activity_id, body))
+        conn.commit()
+        rs = statement.fetchone()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
+def getcomments(activity_id):
+    inputCommand = "SELECT activity_id, user_id, body FROM comments WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (activity_id,))
+
+        rs = statement.fetchall()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
 def getInfo(username):
     inputComand = "SELECT about, interests, location, gender, email FROM users WHERE email = (%s)"
     print(username, file=sys.stderr)
@@ -367,6 +427,7 @@ def getInfo(username):
             conn.close()
 
         return ['No database access', 'No database access']
+
 
 
 def changeProfPic(user, picture):
@@ -433,4 +494,5 @@ def getPic(username):
         else:
             conn.close()
         return ['No database access', 'No database access']
+
 

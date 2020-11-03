@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getInfo, editInfo, likeActivity
-from forms import LoginForm, RegistrationForm, PostForm, EditForm
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getInfo, editInfo, likeActivity, changeProfPic, getPic
+from forms import LoginForm, RegistrationForm, PostForm, EditForm, ChangeProfilePicture
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -219,11 +219,16 @@ def profile():
     activities.reverse
 
     i = getInfo(current_user.id)
-    print(i,file=sys.stderr)
+
     info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+    picDb = getPic(current_user.id)
+    print(picDb,file=sys.stderr)
+    if(picDb != None):
+        pic = b64encode(picDb[0]).decode('"utf-8"')
 
-
-    return render_template('profile.html', activities=activities, title='Activities', info=info)
+    else:
+        pic = None
+    return render_template('profile.html', activities=activities, title='Activities', info=info, pic=pic)
 
 @app.route('/editProfile', methods = ['GET', 'POST'])
 @login_required
@@ -236,6 +241,15 @@ def editinfo():
         interests = form.interests.data
         location = form.location.data
         gender = form.gender.data
+        i = getInfo(current_user.id)
+        if(about == ""):
+            about = i[0][0]
+        if(interests == ""):
+            interests = i[0][1]
+        if(location == ""):
+            location = i[0][2]
+        if(gender == ""):
+            gender = i[0][3]
         print(about,file=sys.stderr)
         print(interests, file=sys.stderr)
 
@@ -245,6 +259,19 @@ def editinfo():
         return redirect(url_for('profile'))
     print(form.errors,file=sys.stderr)
     return render_template('editProfile.html', title = 'Edit', form=form)
+
+
+@app.route('/changePicture', methods = ['GET', 'POST'])
+@login_required
+def editProfPic():
+    form = ChangeProfilePicture()
+    if form.validate_on_submit():
+        picture = form.picture.data.read()
+        i = changeProfPic(current_user.id, picture)
+        print(i,file=sys.stderr)
+        return redirect(url_for('profile'))
+
+    return render_template('changePicture.html', title = 'Profile Picture', form=form)
 
 
 @app.route('/logout')

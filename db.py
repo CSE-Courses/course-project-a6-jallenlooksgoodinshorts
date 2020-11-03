@@ -7,9 +7,20 @@ def connect():
     database = mysql.connector.connect( user = 'k7aqgz64ljyxr9w9', 
                                         password='jl2ymrryvog4t8hu',
                                         host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', 
-                                        database='mh4057an9aee5vxa' 
+                                        database='mh4057an9aee5vxa'
                                         )
+
     return database
+
+def rawConnect():
+        database = mysql.connector.connect(user='k7aqgz64ljyxr9w9',
+                                           password='jl2ymrryvog4t8hu',
+                                           host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+                                           database='mh4057an9aee5vxa',
+                                           raw=True
+                                           )
+
+        return database
 
 def testConn():
     try:
@@ -288,6 +299,71 @@ def getInfo(username):
         statement.execute(inputComand, (username,),multi=True)
 
         return statement.fetchall()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR :
+            print("Access Denied Error", file=sys.stderr)
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found", file=sys.stderr)
+        elif err:
+            print(err, file=sys.stderr)
+        else:
+            conn.close()
+        return ['No database access', 'No database access']
+
+def changeProfPic(user, picture):
+
+    inputValues = "DELETE FROM profilepictures WHERE user_id = (%s);"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputValues, (user,)) # Needs to be updated for likes
+        conn.commit()
+        statement.close()
+        conn.close()
+
+
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+        else:
+            print(err,file=sys.stderr)
+
+
+    inputValues = "INSERT INTO profilepictures (user_id, picture) VALUES(%s,%s);"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputValues, (user, picture)) # Needs to be updated for likes
+        conn.commit()
+        statement.close()
+        conn.close()
+
+        return True
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+        else:
+            print(err,file=sys.stderr)
+    else:
+        return False
+
+def getPic(username):
+
+
+    inputComand = "SELECT picture FROM profilepictures WHERE user_id = (%s)"
+    try:
+        conn = rawConnect()
+        statement = conn.cursor()
+        statement.execute(inputComand, (username,))
+        rs = statement.fetchone()
+        return rs
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR :

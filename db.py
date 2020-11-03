@@ -254,12 +254,12 @@ def editInfo(username, location,gender,about,interests):
 
 
 def checkLikeDB(user_id, activity_id):
-    inputCommand = "SELECT user_id FROM activitylikes WHERE user_id = %s"
+    inputCommand = "SELECT user_id FROM activitylikes WHERE (user_id = %s AND activity_id = %s)"
 
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand,(user_id))
+        statement.execute(inputCommand,(user_id,activity_id,))
 
         rs = statement.fetchone()
 
@@ -289,7 +289,7 @@ def addLike(title, user_id, activity_id):
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand3,(user_id))
+        statement.execute(inputCommand3,(user_id,))
 
         rs = statement.fetchone()
 
@@ -346,12 +346,12 @@ def addLike(title, user_id, activity_id):
 
 
 def removeLike(user_id, activity_id):
-    inputCommand = "DELETE FROM activitylikes WHERE (user_id = %s & activity_id = %s)"
+    inputCommand = "DELETE FROM activitylikes WHERE (user_id = (%s) AND activity_id = (%s))"
 
     try:
         conn = connect()
-        statement = conn.cursor()
-        statement.execute(inputCommand,(user_id, activity_id))
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand,(user_id, activity_id,))
         conn.commit()
 
         statement.close()
@@ -364,19 +364,20 @@ def removeLike(user_id, activity_id):
             print("Database not found")
         else:
             conn.close()
-            return err
+            print(err,file=sys.stderr)
+            return False
 
 def getLikes(activity_id):
-    inputCommand = "SELECT likes FROM activities WHERE activity_id = %s"
-
+    inputCommand = "SELECT * FROM activitylikes WHERE activity_id = %s"
+    likes = 0
     try:
         conn = connect()
         statement = conn.cursor()
         statement.execute(inputCommand, (activity_id,))
-        
-        rs = statement.fetchone()
+        for row in statement:
+            likes = likes + 1
 
-        return rs
+        return likes
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -384,5 +385,6 @@ def getLikes(activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
+            print(err,file=sys.stderr)
             conn.close()
             return False

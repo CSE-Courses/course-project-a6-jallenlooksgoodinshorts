@@ -53,26 +53,29 @@ def browse():
 
     for activ in activityList :
         image = b64encode(activ[2]).decode('"utf-8"')
-        likeTup = getLikes(activ[4]) # Changed for likes
-        likes = likeTup[0]
-
+        likes = getLikes(activ[4]) # Changed for likes
+        if(current_user.is_anonymous == False):
+            likeStatus = checkLikeDB(current_user.id, activ[4])
+        else:
+            likeStatus = False
         a = {
             'title': activ[0],
             'description': activ[1],
             'image': image,
             'activity_id': activ[4],
-            'likes': likes
+            'likes': likes,
+            'likeStatus':likeStatus
+
             }
         activities.append(a)
         
     activities.reverse()
 
-    return render_template('browse.html', activities = activities, title = 'Welcome')
+    return render_template('browse.html', activities = activities, title = 'Welcome', likes=likes, likeStatus=likeStatus)
 
 @app.route('/activityfeed', methods = ['GET', 'POST'])
 @login_required
 def activityfeed():
-
     activityIDs = getActivityIDs(current_user.id)
     activities = []
     print("Current User ID", file=sys.stderr)
@@ -84,34 +87,36 @@ def activityfeed():
         if activityIDs[0] :
             for ids in activityIDs:
                 activ = getActivity(ids[0])
-
-                
+                if(current_user.is_anonymous == False):
+                    likeStatus = checkLikeDB(current_user.id, activ[4])
+                else:
+                    likeStatus=False
                 print("ACTIV", file=sys.stderr)
                 print(activ, file=sys.stderr)
                 image = b64encode(activ[2]).decode('"utf-8"')
-                likeTup = getLikes(activ[4]) # Changed for likes
-                likes = likeTup[0]
+                likes = getLikes(activ[4]) # Changed for likes
 
                 a = {
                     'title': activ[0],
                     'description': activ[1],
                     'image': image,
                     'activity_id': activ[4],
-                    'likes': likes
+                    'likes':likes,
+                    'likeStatus':likeStatus
                     }
                 activities.append(a)
     
         
     activities.reverse()
 
-    return render_template('feed.html', activities = activities, title = 'Activities')
+    return render_template('feed.html', activities = activities,activity=a, title = 'Activities', likes=likes, likeStatus=likeStatus)
 
 @app.route('/activity/<int:activity_id>', methods = ['GET', 'POST'])
 def activity(activity_id):
+    likeStatus = checkLikeDB(current_user.id, activity_id)
     activ = getActivity(activity_id)
     image = b64encode(activ[2]).decode('"utf-8"')
-    likeTup = getLikes(activity_id) # Changed for likes
-    likes = likeTup[0]
+    likes = getLikes(activity_id) # Changed for likes
     a = {
         'title': activ[0],
         'description': activ[1],
@@ -119,7 +124,7 @@ def activity(activity_id):
         'activity_id': activ[4],
         'likes': likes
         }
-    return render_template('activity.html', activity = a, title = 'Activity')
+    return render_template('activity.html', activity = a, title = 'Activity', likeStatus = likeStatus, likes=likes)
 
 @app.route('/newpost', methods = ['GET', 'POST'])
 @login_required
@@ -210,14 +215,10 @@ def likepost(activity_id):
 @login_required
 def unlikepost(activity_id):
     activ = getActivity(activity_id)
-    removeLike(current_user.id, activity_id)
+    print(activ[4],file=sys.stderr)
+    removeLike(current_user.id, activ[4])
     return('', 204)
 
-@app.route('/checklike<int:user_id>/<int:activity_id>', methods = ['GET', 'POST'])
-@login_required
-def checklike(user_id, activity_id):
-    likeStatus = checkLikeDB(user_id, activity_id)
-    return likeStatus
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

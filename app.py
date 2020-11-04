@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for, redirect, flash
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo
-from forms import LoginForm, PostForm, ProfileLookupForm, RegistrationForm
+from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, likeActivity, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment
+from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -8,6 +8,8 @@ import sys
 import db
 import os
 import csv
+import time
+import json
 import secrets
 import gunicorn
 from base64 import b64encode
@@ -108,6 +110,7 @@ def activityfeed():
 @app.route('/activity/<int:activity_id>', methods=['GET', 'POST'])
 def activity(activity_id):
     activ = getActivity(activity_id)
+    members = getActivityUsers(activity_id)
     image = b64encode(activ[2]).decode('"utf-8"')
     likes = 0  # Change for likes
     a = {
@@ -116,7 +119,36 @@ def activity(activity_id):
         'image': image,
         'activity_id': activ[4]
     }
-    return render_template('activity.html', activity=a, title='Activity')
+
+    dbcomments = getcomments(activity_id)
+    comments = []
+    if dbcomments:
+        if dbcomments[0]:
+            for comms in dbcomments:
+                fname = firstNameUser(comms[1])
+                print("USER ID --------------- Comment", file=sys.stderr)
+                print(comms, file=sys.stderr)
+                print(fname, file=sys.stderr)
+                c = {
+                    'username': firstNameUser(comms[1]),
+                    'body': comms[2]
+                }
+                comments.append(c)
+    
+    form = CommentForm()
+
+    print("-------- PRE FORM ----------", file=sys.stderr)
+    if form.validate_on_submit():
+        body = form.comment.data
+        print("Activity ID --------------- Comment", file=sys.stderr)
+        print(current_user.id, file=sys.stderr)
+        buff = writecomment(current_user.id, activity_id, body)
+        url_for('activity', activity_id=activity_id)
+        
+
+
+    return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form)
+
 
 
 @app.route('/newpost', methods=['GET', 'POST'])
@@ -188,7 +220,17 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
     return redirect(url_for('activityfeed'))
 
 
-@app.route('/profilesearch', methods=['GET', 'POST'])
+
+@app.route('/likeactiivity/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def likeactivity(activity_id) :
+    likeActivity(activity_id)
+    return activity(activity_id)
+
+
+
+
+@app.route('/profileinquiry', methods=['GET', 'POST'])
 @login_required
 def searchprofile():
     form = ProfileLookupForm()
@@ -202,9 +244,9 @@ def searchprofile():
         print("Returned Info Result")
         print(returnedInfo, file=sys.stderr)
 
-        return render_template('profilesearch.html', title='search', form=form, returnedInfo=returnedInfo)
+        return render_template('profileinquiry.html', title='search', form=form, returnedInfo=returnedInfo)
 
-    return render_template('profilesearch.html', title='search', form=form)
+    return render_template('profileinquiry.html', title='search', form=form)
 
 
 @ app.route('/otherprofile/<string:user_id>', methods=['GET', 'POST'])
@@ -244,15 +286,92 @@ def vprofile(user_id):
 @ app.route('/profile')
 @ login_required
 def profile():
-    return render_template('profile.html', title='Register')
+    activityIDs = getActivityIDs(current_user.id)
+    activities = []
+    print("Current User ID", file=sys.stderr)
+    print(current_user.id, file=sys.stderr)
+
+    print("Activity IDs", file=sys.stderr)
+    print(activityIDs, file=sys.stderr)
+    if activityIDs:
+        if activityIDs[0]:
+            for ids in activityIDs:
+                activ = getActivity(ids[0])
+                image = b64encode(activ[2]).decode('"utf-8"')
+                likes = 0  # Change for likes
+
+                a = {
+                    'title': activ[0],
+                    'description': activ[1],
+                    'image': image,
+                    'activity_id': activ[4]
+                }
+                activities.append(a)
+
+    activities.reverse
+
+    i = getInfo(current_user.id)
+
+    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+    picDb = getPic(current_user.id)
+    print(picDb,file=sys.stderr)
+    if(picDb != None):
+        pic = b64encode(picDb[0]).decode('"utf-8"')
+
+    else:
+        pic = None
+    return render_template('profile.html', activities=activities, title='Activities', info=info, pic=pic)
+
+@app.route('/editProfile', methods = ['GET', 'POST'])
+@login_required
+def editinfo():
+    form = EditForm()
+
+    if form.validate_on_submit():
+        print(current_user.id,file=sys.stderr)
+        about = form.about.data
+        interests = form.interests.data
+        location = form.location.data
+        gender = form.gender.data
+        i = getInfo(current_user.id)
+        if(about == ""):
+            about = i[0][0]
+        if(interests == ""):
+            interests = i[0][1]
+        if(location == ""):
+            location = i[0][2]
+        if(gender == ""):
+            gender = i[0][3]
+        print(about,file=sys.stderr)
+        print(interests, file=sys.stderr)
 
 
-@ app.route('/logout')
-@ login_required
+        editInfo(current_user.id, about, interests, location, gender)
+        print(form.errors,file=sys.stderr)
+        return redirect(url_for('profile'))
+    print(form.errors,file=sys.stderr)
+    return render_template('editProfile.html', title = 'Edit', form=form)
+
+
+
+@app.route('/changePicture', methods = ['GET', 'POST'])
+@login_required
+def editProfPic():
+    form = ChangeProfilePicture()
+    if form.validate_on_submit():
+        picture = form.picture.data.read()
+        i = changeProfPic(current_user.id, picture)
+        print(i,file=sys.stderr)
+        return redirect(url_for('profile'))
+
+    return render_template('changePicture.html', title = 'Profile Picture', form=form)
+
+
+@app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

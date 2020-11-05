@@ -139,13 +139,15 @@ def userInfo(username):
         return False
 
 def firstNameUser(user_id):
-    inputCommand = "SELECT fname FROM users WHERE email = (%s)"
+    inputCommand = "SELECT username FROM users WHERE email = (%s)"
     try:
         conn = connect()
         statement = conn.cursor()
         statement.execute(inputCommand, (user_id,))
 
-        rs = statement.fetchall()
+        rs = statement.fetchone()
+        statement.close()
+        conn.close()
         return rs
 
     except mysql.connector.Error as err:
@@ -349,7 +351,6 @@ def editInfo(username, about, interests):
             conn.close()
         return False
 
-<<<<<<< HEAD
 def writecomment(user_id, activity_id, body):
     inputCommand = "INSERT INTO comments (user_id, activity_id, body) VALUES(%s,%s,%s)"
     try:
@@ -389,7 +390,6 @@ def getcomments(activity_id):
         else:
             conn.close()
         return False
-=======
 def getInfo(username):
     inputComand = "SELECT about, interests, location, gender, email FROM users WHERE email = (%s)"
     print(username, file=sys.stderr)
@@ -413,4 +413,3 @@ def getInfo(username):
 
         return ['No database access', 'No database access']
 
->>>>>>> 73e5ab5db90db5e90c6b4c495d2ed2a00ef309ac

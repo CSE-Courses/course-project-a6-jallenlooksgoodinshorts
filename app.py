@@ -130,7 +130,7 @@ def activity(activity_id):
                 print(comms, file=sys.stderr)
                 print(fname, file=sys.stderr)
                 c = {
-                    'username': firstNameUser(comms[1]),
+                    'username': str(firstNameUser(comms[1]))[2:-3],
                     'body': comms[2]
                 }
                 comments.append(c)
@@ -143,7 +143,7 @@ def activity(activity_id):
         print("Activity ID --------------- Comment", file=sys.stderr)
         print(current_user.id, file=sys.stderr)
         buff = writecomment(current_user.id, activity_id, body)
-        url_for('activity', activity_id=activity_id)
+        return redirect(url_for('activity', activity_id=activity_id))
         
 
 

@@ -9,6 +9,8 @@ RUN pip install flask-bcrypt
 RUN pip install bcrypt
 RUN pip install flask-login
 RUN pip install gunicorn
+RUN pip install textblob==0.15.1
+RUN python -m textblob.download_corpora
 
 #Bundling Source
 COPY . /app

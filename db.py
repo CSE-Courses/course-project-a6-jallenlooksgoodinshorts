@@ -366,10 +366,7 @@ def editInfo(username, about, interests, location, gender):
             conn.close()
         return False
 
-<<<<<<< HEAD
-=======
 
->>>>>>> ccba5c5295ec48beeb62a07b025ea4d8da7e079e
 def writecomment(user_id, activity_id, body):
     inputCommand = "INSERT INTO comments (user_id, activity_id, body) VALUES(%s,%s,%s)"
     try:
@@ -409,10 +406,7 @@ def getcomments(activity_id):
         else:
             conn.close()
         return False
-<<<<<<< HEAD
-=======
 
->>>>>>> ccba5c5295ec48beeb62a07b025ea4d8da7e079e
 def getInfo(username):
     inputComand = "SELECT about, interests, location, gender, email FROM users WHERE email = (%s)"
     print(username, file=sys.stderr)
@@ -436,8 +430,6 @@ def getInfo(username):
 
         return ['No database access', 'No database access']
 
-<<<<<<< HEAD
-=======
 
 
 def changeProfPic(user, picture):
@@ -506,4 +498,3 @@ def getPic(username):
         return ['No database access', 'No database access']
 
 
->>>>>>> ccba5c5295ec48beeb62a07b025ea4d8da7e079e

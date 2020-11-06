@@ -12,16 +12,22 @@
                     <img src="data:;base64,{{ activity.image }}" class="card-img">
                   </div>
                   <div class="col-sm">
-                    <h3 class="card-title blue">{{ activity.title }}</h5>
+                    <h3 class="card-title blue">{{ activity.title }}</h3>
                     <div class="card-body">
                       <p class="card-text" id="descroption">Description:</p>
                       <p class="card-text">{{ activity.description }}</p>
                       <p class="card-text" id="likes">Likes: {{ activity.likes }}</p>
                       <a href="{{ url_for('joinactivity', activity_id=activity.activity_id) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">Join project</a>
-                      <a href="{{ url_for('likeactivity', activity_id=activity.activity_id) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">Like</a>
+                      {%  if likeStatus %}
+                        <a href="{{ url_for('unlikepost', activity_id=activity.activity_id) }}" type ="button" class="btn nav_button_secondary btn-secondary btn-xs">Unlike</a>
+                      {% else %}
+                        <a href="{{ url_for('likepost', activity_id=activity.activity_id) }}" type ="button" class="btn nav_button_secondary btn-secondary btn-xs">Like</a>
+                      {% endif %}
+
                     </div>
                   </div>
                 </div>
+
                 <section class="mood">
                   <div class="row">
                       <div class="col text-center"> 
@@ -54,7 +60,8 @@
                       {{ form.submit(class = "btn btn-primary btn-lg") }}
                     </p>
                 </fieldset>   
-                  </form> 
+                  </form>
+                <div class="bottomright">Likes: {{ activity.likes }}</div>
               </div>
         </div>
     </div>

@@ -129,6 +129,7 @@ def getUser(username):
         return False
 
 
+
 def userInfo(username):
     inputCommand = "SELECT user_id, email, fname, lname, username, about, interests FROM users WHERE fname LIKE %s OR username LIKE %s"
     combined = "%" + username + "%"
@@ -151,13 +152,15 @@ def userInfo(username):
 
 
 def firstNameUser(user_id):
-    inputCommand = "SELECT fname FROM users WHERE email = (%s)"
+    inputCommand = "SELECT username FROM users WHERE email = (%s)"
     try:
         conn = connect()
         statement = conn.cursor()
         statement.execute(inputCommand, (user_id,))
 
-        rs = statement.fetchall()
+        rs = statement.fetchone()
+        statement.close()
+        conn.close()
         return rs
 
     except mysql.connector.Error as err:
@@ -170,13 +173,13 @@ def firstNameUser(user_id):
         return False
 
 
-def createActivity(title, description, image):  # Needs to be updated for likes
+
+def createActivity(title, description, image, likes): # updated for likes
     inputValues = "INSERT INTO activities (title, description, image, likes) VALUES(%s,%s,%s,%s);"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
-        # Needs to be updated for likes
-        statement.execute(inputValues, (title, description, image, 0))
+        statement.execute(inputValues, (title,description,image,likes)) # updated for likes
         conn.commit()
         rs = statement.lastrowid
 
@@ -258,42 +261,6 @@ def joinActivityDB(user_id, activity_id):
         return False
 
 
-def likeActivity(activity_id):
-    getCommand = "SELECT likes FROM activities WHERE activity_id = (%s)"
-    try:
-        conn = connect()
-        statement = conn.cursor()
-        statement.execute(getCommand, (activity_id,))
-        rs = statement.fetchone()
-        likes = rs[0]
-        likes = (likes + 1)
-
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Access Denied Error")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database not found")
-        else:
-            conn.close()
-        return False
-    inputCommand = "UPDATE activities SET likes = %s WHERE activity_id = (%s)"
-    try:
-        conn = connect()
-        statement = conn.cursor()
-        statement.execute(inputCommand, (likes, activity_id,))
-        conn.commit()
-        return rs[0]
-
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Access Denied Error")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database not found")
-        else:
-            conn.close()
-        return False
-
-
 def getActivityUsers(activity_id):
     inputCommand = "SELECT user_id FROM activitymembers WHERE activity_id = (%s)"
     try:
@@ -362,6 +329,28 @@ def editInfo(username, about, interests, location, gender):
             conn.close()
         return False
 
+def settings(username, password, email):
+    inputCommand = "UPDATE users SET username = %s, password = %s WHERE email = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand, (username, password, email,))
+        conn.commit()
+        rs = statement
+        print(rs,file=sys.stderr)
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        elif err:
+            print(err, file=sys.stderr)
+        else:
+            conn.close()
+        return False
+
 
 def writecomment(user_id, activity_id, body):
     inputCommand = "INSERT INTO comments (user_id, activity_id, body) VALUES(%s,%s,%s)"
@@ -406,7 +395,7 @@ def getcomments(activity_id):
 
 
 def getInfo(username):
-    inputComand = "SELECT about, interests, location, gender, email FROM users WHERE email = (%s)"
+    inputComand = "SELECT about, interests, location, gender, username, password, email FROM users WHERE email = (%s)"
     print(username, file=sys.stderr)
     try:
         conn = connect()
@@ -492,3 +481,141 @@ def getPic(username):
         else:
             conn.close()
         return ['No database access', 'No database access']
+
+
+def checkLikeDB(user_id, activity_id):
+    inputCommand = "SELECT user_id FROM activitylikes WHERE (user_id = %s AND activity_id = %s)"
+
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand,(user_id,activity_id,))
+
+        rs = statement.fetchone()
+
+        if rs is not None:
+            return True
+        else:
+            return False
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            return err
+
+
+def addLike(title, user_id, activity_id):
+    inputCommand = "UPDATE activities SET likes = likes + 1 WHERE (title = %s AND activity_id = %s)"
+    inputCommand2 = "INSERT INTO activitylikes (user_id, activity_id) VALUES(%s,%s)"
+    inputCommand3 = "SELECT user_id FROM activitylikes WHERE user_id = %s"
+    
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand3,(user_id,))
+
+        rs = statement.fetchone()
+
+        if rs is not None:
+            return False
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            return err
+
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand,(title, activity_id))
+        conn.commit()
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            return err
+
+    try:
+        conn2 = connect()
+        statement2 = conn2.cursor()
+        statement2.execute(inputCommand2,(user_id, activity_id))
+        conn2.commit()
+
+        statement2.close()
+        conn2.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            return err
+
+
+def removeLike(user_id, activity_id):
+    inputCommand = "DELETE FROM activitylikes WHERE (user_id = (%s) AND activity_id = (%s))"
+
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand,(user_id, activity_id,))
+        conn.commit()
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            print(err,file=sys.stderr)
+            return False
+
+def getLikes(activity_id):
+    inputCommand = "SELECT * FROM activitylikes WHERE activity_id = %s"
+    likes = 0
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (activity_id,))
+        for row in statement:
+            likes = likes + 1
+
+        return likes
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            print(err,file=sys.stderr)
+            conn.close()
+            return False
+

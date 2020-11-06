@@ -219,7 +219,7 @@ def getAllActivities():
 
 
 def getActivity(activity_id):
-    inputCommand = "SELECT title, description, image, likes, activity_id FROM activities WHERE activity_id = (%s)"
+    inputCommand = "SELECT title, description, image, likes, activity_id, happy, neutral, sad, totalcomments FROM activities WHERE activity_id = (%s)"
     try:
         conn = connect()
         statement = conn.cursor()
@@ -302,7 +302,6 @@ def getActivityUsers(activity_id):
         conn = connect()
         statement = conn.cursor()
         statement.execute(inputCommand, (activity_id,))
-
         rs = statement.fetchall()
         print("ASDASDASDASDASD", flush=True)
         print(rs, flush=True)

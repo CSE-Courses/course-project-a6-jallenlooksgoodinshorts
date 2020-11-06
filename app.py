@@ -45,8 +45,7 @@ testConn()
 bcrypt = Bcrypt(app)
 
 
-@app.route('/')
-@app.route('/home')
+@Appo.route('/home')
 def home():
     return render_template('home.html', title='Home')
 
@@ -121,6 +120,12 @@ def activity(activity_id):
         'activity_id': activ[4]
     }
 
+    # Setting the sentiments for the activity
+    happy               = activ[5]
+    neutral             = activ[6]
+    sad                 = activ[7]
+    totalComments       = activ[8]
+
     dbcomments = getcomments(activity_id)
     comments = []
     if dbcomments:
@@ -143,6 +148,22 @@ def activity(activity_id):
         body = form.comment.data
         print("Activity ID --------------- Comment", file=sys.stderr)
         print(current_user.id, file=sys.stderr)
+
+        # Comment Sentiment Analysis
+        text = TextBlob(body)
+        sentiment = text.polarity
+
+        if (sentiment > 0.4):
+            happy += 1
+        elif (sentiment < 0) :
+            sad += 1
+        else:
+            neutral +=1
+
+        totalComments += 1
+        
+        
+        # End Analysis
         buff = writecomment(current_user.id, activity_id, body)
         return redirect(url_for('activity', activity_id=activity_id))
         
@@ -376,3 +397,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)
+

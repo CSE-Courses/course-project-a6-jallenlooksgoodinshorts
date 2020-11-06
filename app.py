@@ -149,7 +149,7 @@ def activity(activity_id):
                     'body': comms[2]
                 }
                 comments.append(c)
-    
+
     form = CommentForm()
 
     print("-------- PRE FORM ----------", file=sys.stderr)
@@ -159,11 +159,8 @@ def activity(activity_id):
         print(current_user.id, file=sys.stderr)
         buff = writecomment(current_user.id, activity_id, body)
         return redirect(url_for('activity', activity_id=activity_id))
-        
-
 
     return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form,likeStatus = likeStatus, likes=likes)
-
 
 
 
@@ -240,14 +237,27 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
 @login_required
 def searchprofile():
     form = ProfileLookupForm()
+    substringedForm = []
+    returnedInfo = []
+    addedUser = []
 
-    print("Search Input")
-    print(form, file=sys.stderr)
+    print("Search Input --------------------------", file=sys.stderr)
+    print(form.accproperty.data, file=sys.stderr)
 
     if form.validate_on_submit():
-        returnedInfo = userInfo(form.accproperty.data)
+        for length in range(1, len(form.accproperty.data)+1):
+            substringedForm.append(form.accproperty.data[0:length])
 
-        print("Returned Info Result")
+        substringedForm.reverse()
+
+        for substr in substringedForm:
+            infoRet = userInfo(substr)
+            for infoUser in infoRet:
+                if infoUser[0] not in addedUser:
+                    addedUser.append(infoUser[0])
+                    returnedInfo.append(infoUser)
+
+        print("Returned Info Result ------------", file=sys.stderr)
         print(returnedInfo, file=sys.stderr)
 
         return render_template('profileinquiry.html', title='search', form=form, returnedInfo=returnedInfo)
@@ -318,9 +328,10 @@ def profile():
 
     i = getInfo(current_user.id)
 
-    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+    info = {'about': i[0], 'interests': i[0],
+            'location': i[0], 'gender': i[0], 'email': i[0]}
     picDb = getPic(current_user.id)
-    print(picDb,file=sys.stderr)
+    print(picDb, file=sys.stderr)
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 
@@ -345,6 +356,7 @@ def profileSettings():
     else:
         pic = None
     return render_template('settings.html', info=info, pic=pic)
+  
 
 @app.route('/editProfile', methods = ['GET', 'POST'])
 @login_required
@@ -352,7 +364,7 @@ def editinfo():
     form = EditForm()
 
     if form.validate_on_submit():
-        print(current_user.id,file=sys.stderr)
+        print(current_user.id, file=sys.stderr)
         about = form.about.data
         interests = form.interests.data
         location = form.location.data
@@ -366,13 +378,13 @@ def editinfo():
             location = i[0][2]
         if(gender == ""):
             gender = i[0][3]
-        print(about,file=sys.stderr)
+        print(about, file=sys.stderr)
         print(interests, file=sys.stderr)
 
-
         editInfo(current_user.id, about, interests, location, gender)
-        print(form.errors,file=sys.stderr)
+        print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
+      
     print(form.errors,file=sys.stderr)
     return render_template('editProfile.html', title = 'Edit', form=form)
 
@@ -397,18 +409,17 @@ def editSettings():
     return render_template('securitySettings.html', title = 'Edit', form=form)
 
 
-
-@app.route('/changePicture', methods = ['GET', 'POST'])
+@app.route('/changePicture', methods=['GET', 'POST'])
 @login_required
 def editProfPic():
     form = ChangeProfilePicture()
     if form.validate_on_submit():
         picture = form.picture.data.read()
         i = changeProfPic(current_user.id, picture)
-        print(i,file=sys.stderr)
+        print(i, file=sys.stderr)
         return redirect(url_for('profile'))
 
-    return render_template('changePicture.html', title = 'Profile Picture', form=form)
+    return render_template('changePicture.html', title='Profile Picture', form=form)
 
 
 @app.route('/logout')
@@ -416,6 +427,7 @@ def editProfPic():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 
 @app.route('/likepost/<int:activity_id>', methods = ['GET', 'POST'])
 @login_required

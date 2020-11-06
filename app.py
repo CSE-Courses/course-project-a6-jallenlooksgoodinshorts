@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment, settings
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment, settings,addLike, getLikes, checkLikeDB, removeLike
 from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm, securityForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -58,25 +58,30 @@ def browse():
 
     for activ in activityList:
         image = b64encode(activ[2]).decode('"utf-8"')
-        likes = 0  # Change for likes
-
+        likes = getLikes(activ[4]) # Changed for likes
+        if(current_user.is_anonymous == False):
+            likeStatus = checkLikeDB(current_user.id, activ[4])
+        else:
+            likeStatus = False
         a = {
             'title': activ[0],
             'description': activ[1],
             'image': image,
-            'activity_id': activ[4]
-        }
+            'activity_id': activ[4],
+            'likes': likes,
+            'likeStatus':likeStatus
+
+            }
         activities.append(a)
 
     activities.reverse()
 
-    return render_template('browse.html', activities=activities, title='Welcome')
+    return render_template('browse.html', activities = activities, title = 'Welcome', likes=likes, likeStatus=likeStatus)
 
 
 @app.route('/activityfeed', methods=['GET', 'POST'])
 @login_required
 def activityfeed():
-
     activityIDs = getActivityIDs(current_user.id)
     activities = []
     print("Current User ID", file=sys.stderr)
@@ -88,36 +93,46 @@ def activityfeed():
         if activityIDs[0]:
             for ids in activityIDs:
                 activ = getActivity(ids[0])
-
+                if(current_user.is_anonymous == False):
+                    likeStatus = checkLikeDB(current_user.id, activ[4])
+                else:
+                    likeStatus=False
                 print("ACTIV", file=sys.stderr)
                 print(activ, file=sys.stderr)
                 image = b64encode(activ[2]).decode('"utf-8"')
-                likes = 0  # Change for likes
+                likes = getLikes(activ[4]) # Changed for likes
 
                 a = {
                     'title': activ[0],
                     'description': activ[1],
                     'image': image,
-                    'activity_id': activ[4]
-                }
+                    'activity_id': activ[4],
+                    'likes':likes,
+                    'likeStatus':likeStatus
+                    }
+
                 activities.append(a)
 
     activities.reverse()
 
-    return render_template('feed.html', activities=activities, title='Activities')
+
+    return render_template('feed.html', activities = activities,activity=a, title = 'Activities', likes=likes, likeStatus=likeStatus)
 
 
 @app.route('/activity/<int:activity_id>', methods=['GET', 'POST'])
 def activity(activity_id):
+    likeStatus = checkLikeDB(current_user.id, activity_id)
     activ = getActivity(activity_id)
     members = getActivityUsers(activity_id)
     image = b64encode(activ[2]).decode('"utf-8"')
-    likes = 0  # Change for likes
+    likes = getLikes(activity_id) # Changed for likes
+
     a = {
         'title': activ[0],
         'description': activ[1],
         'image': image,
-        'activity_id': activ[4]
+        'activity_id': activ[4],
+        'likes':likes
     }
 
     dbcomments = getcomments(activity_id)
@@ -147,7 +162,8 @@ def activity(activity_id):
         
 
 
-    return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form)
+    return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form,likeStatus = likeStatus, likes=likes)
+
 
 
 
@@ -159,7 +175,7 @@ def newpost():
         title = form.title.data
         description = form.body.data
         image = form.image.data.read()
-        activity_id = createActivity(title, description, image)
+        activity_id = createActivity(title, description, image, 0)
         print("Activity ID", file=sys.stderr)
         print(activity_id, file=sys.stderr)
         joinActivityDB(current_user.id, activity_id)
@@ -400,6 +416,23 @@ def editProfPic():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+@app.route('/likepost/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def likepost(activity_id):
+    activ = getActivity(activity_id)
+    title = activ[0]
+    addLike(title, current_user.id, activity_id)
+    return('', 204)
+
+@app.route('/unlikepost/<int:activity_id>', methods = ['GET', 'POST'])
+@login_required
+def unlikepost(activity_id):
+    activ = getActivity(activity_id)
+    print(activ[4],file=sys.stderr)
+    removeLike(current_user.id, activ[4])
+    return('', 204)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

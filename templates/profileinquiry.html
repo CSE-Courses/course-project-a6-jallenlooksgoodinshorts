@@ -14,9 +14,9 @@
                         {{ form.accproperty.label(class="form-control-label") }}<br>
                         {{ form.accproperty(class="form-control form-control-lg") }}<br>
                         {% for error in form.accproperty.errors %}
-                            <span style="color: red;">
-                                [{{ error }}]
-                            </span>
+                        <span style="color: red;">
+                            [{{ error }}]
+                        </span>
                         {% endfor %}
                     </p>
 
@@ -28,7 +28,7 @@
 </form>
 
 {% for item in returnedInfo %}
-    {{ profile_display(item) }}
+{{ profile_display(item) }}
 {% endfor %}
 
 {% endblock content %}

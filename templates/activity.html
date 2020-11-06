@@ -18,7 +18,6 @@
                       <p class="card-text">{{ activity.description }}</p>
                       <p class="card-text" id="likes">Likes: {{ activity.likes }}</p>
                       <a href="{{ url_for('joinactivity', activity_id=activity.activity_id) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">Join project</a>
-                      <a href="{{ url_for('likeactivity', activity_id=activity.activity_id) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">Like</a>
                     </div>
                   </div>
                 </div>

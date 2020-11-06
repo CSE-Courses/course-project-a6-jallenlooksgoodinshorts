@@ -260,42 +260,6 @@ def joinActivityDB(user_id, activity_id):
         return False
 
 
-def likeActivity(activity_id):
-    getCommand = "SELECT likes FROM activities WHERE activity_id = (%s)"
-    try:
-        conn = connect()
-        statement = conn.cursor()
-        statement.execute(getCommand, (activity_id,))
-        rs = statement.fetchone()
-        likes = rs[0]
-        likes = (likes + 1)
-
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Access Denied Error")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database not found")
-        else:
-            conn.close()
-        return False
-    inputCommand = "UPDATE activities SET likes = %s WHERE activity_id = (%s)"
-    try:
-        conn = connect()
-        statement = conn.cursor()
-        statement.execute(inputCommand, (likes,activity_id,))
-        conn.commit()
-        return rs[0]
-
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Access Denied Error")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database not found")
-        else:
-            conn.close()
-        return False
-
-
 def getActivityUsers(activity_id):
     inputCommand = "SELECT user_id FROM activitymembers WHERE activity_id = (%s)"
     try:

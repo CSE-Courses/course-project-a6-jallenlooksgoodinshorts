@@ -220,16 +220,6 @@ def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
     return redirect(url_for('activityfeed'))
 
 
-
-@app.route('/likeactiivity/<int:activity_id>', methods = ['GET', 'POST'])
-@login_required
-def likeactivity(activity_id) :
-    likeActivity(activity_id)
-    return activity(activity_id)
-
-
-
-
 @app.route('/profileinquiry', methods=['GET', 'POST'])
 @login_required
 def searchprofile():

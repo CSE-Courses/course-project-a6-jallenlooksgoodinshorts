@@ -366,6 +366,28 @@ def editInfo(username, about, interests, location, gender):
             conn.close()
         return False
 
+def settings(username, password, email):
+    inputCommand = "UPDATE users SET username = %s, password = %s WHERE email = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand, (username, password, email,))
+        conn.commit()
+        rs = statement
+        print(rs,file=sys.stderr)
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        elif err:
+            print(err, file=sys.stderr)
+        else:
+            conn.close()
+        return False
+
 
 def writecomment(user_id, activity_id, body):
     inputCommand = "INSERT INTO comments (user_id, activity_id, body) VALUES(%s,%s,%s)"
@@ -408,7 +430,7 @@ def getcomments(activity_id):
         return False
 
 def getInfo(username):
-    inputComand = "SELECT about, interests, location, gender, email FROM users WHERE email = (%s)"
+    inputComand = "SELECT about, interests, location, gender, username, password, email FROM users WHERE email = (%s)"
     print(username, file=sys.stderr)
     try:
         conn = connect()

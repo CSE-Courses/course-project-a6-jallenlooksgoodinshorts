@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, likeActivity, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment
-from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm
+from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, likeActivity, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment, settings
+from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm, securityForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -322,6 +322,24 @@ def profile():
         pic = None
     return render_template('profile.html', activities=activities, title='Activities', info=info, pic=pic)
 
+@ app.route('/profileSettings')
+@ login_required
+def profileSettings():
+    print("Current User ID", file=sys.stderr)
+    print(current_user.id, file=sys.stderr)
+
+    i = getInfo(current_user.id)
+
+    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+    picDb = getPic(current_user.id)
+    print(picDb,file=sys.stderr)
+    if(picDb != None):
+        pic = b64encode(picDb[0]).decode('"utf-8"')
+
+    else:
+        pic = None
+    return render_template('settings.html', info=info, pic=pic)
+
 @app.route('/editProfile', methods = ['GET', 'POST'])
 @login_required
 def editinfo():
@@ -351,6 +369,26 @@ def editinfo():
         return redirect(url_for('profile'))
     print(form.errors,file=sys.stderr)
     return render_template('editProfile.html', title = 'Edit', form=form)
+
+@app.route('/securitySettings', methods = ['GET', 'POST'])
+@login_required
+def editSettings():
+    form = securityForm()
+
+    if form.validate_on_submit():
+        print(current_user.id,file=sys.stderr)
+        username = form.username.data
+        password = form.password.data
+        i = getInfo(current_user.id)
+        if(username == ""):
+            username = i[0][5]
+        if(password == ""):
+            password = i[0][6]
+        settings(username, password, current_user.id)
+        print(form.errors,file=sys.stderr)
+        return redirect(url_for('profile'))
+    print(form.errors,file=sys.stderr)
+    return render_template('securitySettings.html', title = 'Edit', form=form)
 
 
 

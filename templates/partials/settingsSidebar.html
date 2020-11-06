@@ -5,9 +5,8 @@
   <div class="card"style="background-color: darkgray;">
     <ul class="list-group list-group-flush" style="background: darkgray;">
       <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="{{ url_for('profile')}}" class="card-link">Profile</a></li>
-      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="#" class="card-link">Notifications</a></li>
-      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="#" class="card-link">Privacy Settings</a></li>
-      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="#" class="card-link">Security Settings</a></li>
+      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="{{ url_for('profileSettings') }}" class="card-link">Profile Settings</a></li>
+      <li class="list-group-item" style="background: darkgray; border-bottom: solid .5px;"><a href="{{ url_for('editSettings') }}" class="card-link">Security Settings</a></li>
     </ul>
   </div>
 </div>

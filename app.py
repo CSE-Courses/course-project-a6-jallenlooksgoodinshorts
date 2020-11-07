@@ -1,11 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
-<<<<<<< HEAD
-from db import getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, userInfoInquiry, getUser, userInfo, getInfo, editInfo, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment, settings, addLike, getLikes, checkLikeDB, removeLike
-from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm, securityForm
-=======
 from db import updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, likeActivity, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment
 from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm
->>>>>>> socketcomments
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -135,11 +130,8 @@ def activity(activity_id):
         'description': activ[1].decode(),
         'image': image,
         'activity_id': activ[4],
-<<<<<<< HEAD
-        'likes': likes
-=======
+        'likes': likes,
         'happy': int(round(((activ[5] * 100) / activ[8]),2))
->>>>>>> socketcomments
     }
 
     # Setting the sentiments for the activity

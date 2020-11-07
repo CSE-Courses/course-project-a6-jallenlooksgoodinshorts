@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
-from db import userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity,getUser,userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic,firstNameUser, getcomments, getActivityUsers, writecomment
+from db import userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment
 from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -45,6 +45,7 @@ testConn()
 
 bcrypt = Bcrypt(app)
 
+
 @app.route('/')
 @app.route('/home')
 def home():
@@ -85,7 +86,7 @@ def browse():
 def activityfeed():
     activityIDs = getActivityIDs(current_user.id)
     activities = []
-    
+
     print("Activity IDs", file=sys.stderr)
     print(activityIDs, file=sys.stderr)
     if activityIDs:
@@ -131,14 +132,14 @@ def activity(activity_id):
         'image': image,
         'activity_id': activ[4],
         'likes': likes,
-        'happy': int(round(((activ[5] * 100) / activ[8]),2))
+        'happy': int(round(((activ[5] * 100) / activ[8]), 2))
     }
 
     # Setting the sentiments for the activity
-    happy               = activ[5]
-    neutral             = activ[6]
-    sad                 = activ[7]
-    totalComments       = activ[8]
+    happy = activ[5]
+    neutral = activ[6]
+    sad = activ[7]
+    totalComments = activ[8]
 
     dbcomments = getcomments(activity_id)
     comments = []
@@ -169,19 +170,17 @@ def activity(activity_id):
 
         if (sentiment > 0.4):
             happy += 1
-        elif (sentiment < 0) :
+        elif (sentiment < 0):
             sad += 1
         else:
-            neutral +=1
+            neutral += 1
 
         totalComments += 1
 
         print(sentiment, file=sys.stderr)
 
-
         updateSentiments(activity_id, happy, neutral, sad, totalComments)
-        
-        
+
         # End Analysis
         buff = writecomment(current_user.id, activity_id, body)
         return redirect(url_for('activity', activity_id=activity_id))
@@ -314,8 +313,8 @@ def vprofile(user_id):
                 likes = 0  # Change for likes
 
                 a = {
-                    'title': activ[0],
-                    'description': activ[1],
+                    'title': activ[0].decode('"utf-8"'),
+                    'description': activ[1].decode('"utf-8"'),
                     'image': image,
                     'activity_id': activ[4]
                 }
@@ -479,4 +478,3 @@ def unlikepost(activity_id):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)
-

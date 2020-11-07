@@ -115,7 +115,8 @@ def activity(activity_id):
         'title': activ[0].decode(),
         'description': activ[1].decode(),
         'image': image,
-        'activity_id': activ[4]
+        'activity_id': activ[4],
+        'happy': int(round(((activ[5] * 100) / activ[8]),2))
     }
 
     # Setting the sentiments for the activity

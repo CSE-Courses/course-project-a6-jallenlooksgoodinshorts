@@ -6,7 +6,7 @@ import sys
 
 def connect():
     database = mysql.connector.connect(user='k7aqgz64ljyxr9w9',
-                                       password='jl2ymrryvog4t8hu',
+                                       password='j5zmy2v2ujgcjptt',
                                        host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
                                        database='mh4057an9aee5vxa'
                                        )
@@ -15,7 +15,7 @@ def connect():
 
 def rawConnect():
     database = mysql.connector.connect(user='k7aqgz64ljyxr9w9',
-                                       password='jl2ymrryvog4t8hu',
+                                       password='j5zmy2v2ujgcjptt',
                                        host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
                                        database='mh4057an9aee5vxa',
                                        raw=True
@@ -129,16 +129,17 @@ def getUser(username):
         return False
 
 
-
 def userInfo(username):
-    inputCommand = "SELECT user_id, email, fname, lname, username, about, interests FROM users WHERE fname LIKE %s OR username LIKE %s"
+    inputCommand = "SELECT user_id, email, fname, lname, username, about, interests FROM users WHERE fname LIKE (%s) OR username LIKE (%s)"
     combined = "%" + username + "%"
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand, (combined, combined, combined,))
+        statement.execute(inputCommand, (combined, combined,))
 
         rs = statement.fetchall()
+        print("rs-------------------", flush=True)
+        print(rs, flush=True)
         return rs
 
     except mysql.connector.Error as err:
@@ -148,6 +149,8 @@ def userInfo(username):
             print("Database not found")
         else:
             conn.close()
+        print("rs-------------------", flush=True)
+
         return False
 
 
@@ -173,13 +176,13 @@ def firstNameUser(user_id):
         return False
 
 
-
-def createActivity(title, description, image, likes): # updated for likes
+def createActivity(title, description, image, likes):  # updated for likes
     inputValues = "INSERT INTO activities (title, description, image, likes) VALUES(%s,%s,%s,%s);"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
-        statement.execute(inputValues, (title,description,image,likes)) # updated for likes
+        statement.execute(inputValues, (title, description,
+                                        image, likes))  # updated for likes
         conn.commit()
         rs = statement.lastrowid
 
@@ -329,6 +332,7 @@ def editInfo(username, about, interests, location, gender):
             conn.close()
         return False
 
+
 def settings(username, password, email):
     inputCommand = "UPDATE users SET username = %s, password = %s WHERE email = (%s)"
     try:
@@ -337,7 +341,7 @@ def settings(username, password, email):
         statement.execute(inputCommand, (username, password, email,))
         conn.commit()
         rs = statement
-        print(rs,file=sys.stderr)
+        print(rs, file=sys.stderr)
         conn.close()
 
     except mysql.connector.Error as err:
@@ -489,7 +493,7 @@ def checkLikeDB(user_id, activity_id):
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand,(user_id,activity_id,))
+        statement.execute(inputCommand, (user_id, activity_id,))
 
         rs = statement.fetchone()
 
@@ -515,11 +519,11 @@ def addLike(title, user_id, activity_id):
     inputCommand = "UPDATE activities SET likes = likes + 1 WHERE (title = %s AND activity_id = %s)"
     inputCommand2 = "INSERT INTO activitylikes (user_id, activity_id) VALUES(%s,%s)"
     inputCommand3 = "SELECT user_id FROM activitylikes WHERE user_id = %s"
-    
+
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand3,(user_id,))
+        statement.execute(inputCommand3, (user_id,))
 
         rs = statement.fetchone()
 
@@ -541,7 +545,7 @@ def addLike(title, user_id, activity_id):
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand,(title, activity_id))
+        statement.execute(inputCommand, (title, activity_id))
         conn.commit()
 
         statement.close()
@@ -559,7 +563,7 @@ def addLike(title, user_id, activity_id):
     try:
         conn2 = connect()
         statement2 = conn2.cursor()
-        statement2.execute(inputCommand2,(user_id, activity_id))
+        statement2.execute(inputCommand2, (user_id, activity_id))
         conn2.commit()
 
         statement2.close()
@@ -581,7 +585,7 @@ def removeLike(user_id, activity_id):
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
-        statement.execute(inputCommand,(user_id, activity_id,))
+        statement.execute(inputCommand, (user_id, activity_id,))
         conn.commit()
 
         statement.close()
@@ -594,8 +598,9 @@ def removeLike(user_id, activity_id):
             print("Database not found")
         else:
             conn.close()
-            print(err,file=sys.stderr)
+            print(err, file=sys.stderr)
             return False
+
 
 def getLikes(activity_id):
     inputCommand = "SELECT * FROM activitylikes WHERE activity_id = %s"
@@ -615,7 +620,6 @@ def getLikes(activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
-            print(err,file=sys.stderr)
+            print(err, file=sys.stderr)
             conn.close()
             return False
-

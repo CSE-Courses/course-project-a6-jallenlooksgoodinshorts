@@ -14,6 +14,8 @@ import secrets
 import gunicorn
 from base64 import b64encode
 
+
+
 # Runs Bcrypt on server
 
 app = Flask(__name__)
@@ -349,7 +351,6 @@ def profileSettings():
 
     info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
     picDb = getPic(current_user.id)
-    print(picDb,file=sys.stderr)
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 
@@ -415,8 +416,9 @@ def editProfPic():
     form = ChangeProfilePicture()
     if form.validate_on_submit():
         picture = form.picture.data.read()
+        print(picture,file=sys.stderr)
         i = changeProfPic(current_user.id, picture)
-        print(i, file=sys.stderr)
+        print(i,file=sys.stderr)
         return redirect(url_for('profile'))
 
     return render_template('changePicture.html', title='Profile Picture', form=form)

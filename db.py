@@ -5,11 +5,12 @@ import sys
 
 
 def connect():
-    database = mysql.connector.connect(user='k7aqgz64ljyxr9w9',
-                                       password='j5zmy2v2ujgcjptt',
-                                       host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-                                       database='mh4057an9aee5vxa'
-                                       )
+    database = mysql.connector.connect( user = 'k7aqgz64ljyxr9w9', 
+                                        password='j5zmy2v2ujgcjptt',
+                                        host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', 
+                                        database='mh4057an9aee5vxa' 
+                                        )
+
     return database
 
 
@@ -518,12 +519,11 @@ def checkLikeDB(user_id, activity_id):
 def addLike(title, user_id, activity_id):
     inputCommand = "UPDATE activities SET likes = likes + 1 WHERE (title = %s AND activity_id = %s)"
     inputCommand2 = "INSERT INTO activitylikes (user_id, activity_id) VALUES(%s,%s)"
-    inputCommand3 = "SELECT user_id FROM activitylikes WHERE user_id = %s"
-
+    inputCommand3 = "SELECT user_id FROM activitylikes WHERE (user_id = %s AND activity_id = %s)"
     try:
         conn = connect()
         statement = conn.cursor()
-        statement.execute(inputCommand3, (user_id,))
+        statement.execute(inputCommand3,(user_id, activity_id,))
 
         rs = statement.fetchone()
 
@@ -539,14 +539,9 @@ def addLike(title, user_id, activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
+            print(err,file=sys.stderr)
             conn.close()
             return err
-
-    try:
-        conn = connect()
-        statement = conn.cursor()
-        statement.execute(inputCommand, (title, activity_id))
-        conn.commit()
 
         statement.close()
         conn.close()
@@ -557,13 +552,17 @@ def addLike(title, user_id, activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
+            print(err,file=sys.stderr)
             conn.close()
             return err
+
 
     try:
         conn2 = connect()
         statement2 = conn2.cursor()
-        statement2.execute(inputCommand2, (user_id, activity_id))
+        print(user_id,file=sys.stderr)
+        print(activity_id,file=sys.stderr)
+        statement2.execute(inputCommand2,(user_id, activity_id,))
         conn2.commit()
 
         statement2.close()
@@ -575,6 +574,7 @@ def addLike(title, user_id, activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
+            print(err,file=sys.stderr)
             conn.close()
             return err
 

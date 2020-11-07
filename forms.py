@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, IntegerField, TextAreaField, SubmitField, BooleanField, SelectField
-from wtforms.validators import DataRequired, Length, EqualTo, Email, InputRequired
+from wtforms.validators import DataRequired, Length, EqualTo, Email, InputRequired, Regexp
 
 
 class LoginForm(FlaskForm):
@@ -20,7 +20,7 @@ class RegistrationForm(FlaskForm):
 
 
 class ProfileLookupForm(FlaskForm):
-    accproperty = StringField('Enter the Account Name', validators=[(DataRequired())])
+    accproperty = StringField('Enter the Account Name', validators=[DataRequired(), Regexp('^\w+$')])
     submit = SubmitField("Look Up")
 
 

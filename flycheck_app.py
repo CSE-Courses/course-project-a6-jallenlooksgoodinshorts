@@ -79,7 +79,9 @@ def activityfeed():
 
     activityIDs = getActivityIDs(current_user.id)
     activities = []
-    
+    print("Current User ID", file=sys.stderr)
+    print(current_user.id, file=sys.stderr)
+
     print("Activity IDs", file=sys.stderr)
     print(activityIDs, file=sys.stderr)
     if activityIDs:
@@ -88,13 +90,13 @@ def activityfeed():
                 activ = getActivity(ids[0])
 
                 print("ACTIV", file=sys.stderr)
-                print(activ[0].decode(), file=sys.stderr)
+                print(activ, file=sys.stderr)
                 image = b64encode(activ[2]).decode('"utf-8"')
                 likes = 0  # Change for likes
 
                 a = {
-                    'title': activ[0].decode(),
-                    'description': activ[1].decode(),
+                    'title': activ[0],
+                    'description': activ[1],
                     'image': image,
                     'activity_id': activ[4]
                 }
@@ -112,17 +114,17 @@ def activity(activity_id):
     image = b64encode(activ[2]).decode('"utf-8"')
     likes = 0  # Change for likes
     a = {
-        'title': activ[0].decode(),
-        'description': activ[1].decode(),
+        'title': activ[0],
+        'description': activ[1],
         'image': image,
         'activity_id': activ[4]
     }
 
     # Setting the sentiments for the activity
-    happy               = activ[5]
-    neutral             = activ[6]
-    sad                 = activ[7]
-    totalComments       = activ[8]
+    happy               = int(str(activ[5]))
+    neutral             = int(str(activ[6]))
+    sad                 = int(str(activ[7]))
+    totalComments       = int(str(activ[8]))
 
     dbcomments = getcomments(activity_id)
     comments = []
@@ -138,7 +140,7 @@ def activity(activity_id):
                     'body': comms[2]
                 }
                 comments.append(c)
-    
+    y
     form = CommentForm()
 
     print("-------- PRE FORM ----------", file=sys.stderr)
@@ -159,9 +161,6 @@ def activity(activity_id):
             neutral +=1
 
         totalComments += 1
-
-        print(sentiment, file=sys.stderr)
-
 
         updateSentiments(activity_id, happy, neutral, sad, totalComments)
         

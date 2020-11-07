@@ -1,3 +1,4 @@
+from sys import stderr
 import mysql.connector
 from mysql.connector import errorcode
 import os
@@ -222,7 +223,7 @@ def getActivity(activity_id):
     inputCommand = "SELECT title, description, image, likes, activity_id, happy, neutral, sad, totalcomments FROM activities WHERE activity_id = (%s)"
     try:
         conn = connect()
-        statement = conn.cursor()
+        statement = conn.cursor(prepared=True)
         statement.execute(inputCommand, (activity_id,))
 
         rs = statement.fetchone()
@@ -496,4 +497,31 @@ def getPic(username):
             conn.close()
         return ['No database access', 'No database access']
 
+def updateSentiments(activity_id, happy, neutral, sad, totalComments):
 
+    print("Sentiment Values", file=sys.stderr)
+    print(happy, file=sys.stderr)
+    print(neutral, file=sys.stderr)
+    print(sad, file=sys.stderr)
+    print(totalComments, file=sys.stderr)
+
+
+    inputComand = "UPDATE activities SET happy = %s, neutral = %s, sad = %s, totalcomments = %s WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputComand, (happy, neutral, sad, totalComments, activity_id,))
+        conn.commit()
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR :
+            print("Access Denied Error", file=sys.stderr)
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found", file=sys.stderr)
+        elif err:
+            print(err, file=sys.stderr)
+        else:
+            conn.close()
+        return ['No database access', 'No database access']

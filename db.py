@@ -526,6 +526,16 @@ def updateSentiments(activity_id, happy, neutral, sad, totalComments):
         statement.close()
         conn.close()
 
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            return err
+
+
 def checkLikeDB(user_id, activity_id):
     inputCommand = "SELECT user_id FROM activitylikes WHERE (user_id = %s AND activity_id = %s)"
 
@@ -535,14 +545,13 @@ def checkLikeDB(user_id, activity_id):
         statement.execute(inputCommand, (user_id, activity_id,))
 
         rs = statement.fetchone()
-
+        statement.close()
+        conn.close()
         if rs is not None:
             return True
         else:
             return False
-
-        statement.close()
-        conn.close()
+        
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

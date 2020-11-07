@@ -1,3 +1,4 @@
+from sys import stderr
 import mysql.connector
 from mysql.connector import errorcode
 import os
@@ -245,10 +246,10 @@ def getAllActivities():
 
 
 def getActivity(activity_id):
-    inputCommand = "SELECT title, description, image, likes, activity_id FROM activities WHERE activity_id = (%s)"
+    inputCommand = "SELECT title, description, image, likes, activity_id, happy, neutral, sad, totalcomments FROM activities WHERE activity_id = (%s)"
     try:
         conn = connect()
-        statement = conn.cursor()
+        statement = conn.cursor(prepared=True)
         statement.execute(inputCommand, (activity_id,))
 
         rs = statement.fetchone()
@@ -292,7 +293,6 @@ def getActivityUsers(activity_id):
         conn = connect()
         statement = conn.cursor()
         statement.execute(inputCommand, (activity_id,))
-
         rs = statement.fetchall()
         print("ASDASDASDASDASD", flush=True)
         print(rs, flush=True)
@@ -508,6 +508,23 @@ def getPic(username):
             conn.close()
         return ['No database access', 'No database access']
 
+def updateSentiments(activity_id, happy, neutral, sad, totalComments):
+
+    print("Sentiment Values", file=sys.stderr)
+    print(happy, file=sys.stderr)
+    print(neutral, file=sys.stderr)
+    print(sad, file=sys.stderr)
+    print(totalComments, file=sys.stderr)
+
+
+    inputComand = "UPDATE activities SET happy = %s, neutral = %s, sad = %s, totalcomments = %s WHERE activity_id = (%s)"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputComand, (happy, neutral, sad, totalComments, activity_id,))
+        conn.commit()
+        statement.close()
+        conn.close()
 
 def checkLikeDB(user_id, activity_id):
     inputCommand = "SELECT user_id FROM activitylikes WHERE (user_id = %s AND activity_id = %s)"

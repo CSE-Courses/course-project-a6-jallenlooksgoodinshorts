@@ -13,6 +13,8 @@ import json
 import secrets
 import gunicorn
 from base64 import b64encode
+from PIL import Image
+import io
 
 # Runs Bcrypt on server
 
@@ -338,7 +340,6 @@ def profileSettings():
 
     info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
     picDb = getPic(current_user.id)
-    print(picDb,file=sys.stderr)
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 
@@ -404,7 +405,17 @@ def editProfPic():
     form = ChangeProfilePicture()
     if form.validate_on_submit():
         picture = form.picture.data.read()
-        i = changeProfPic(current_user.id, picture)
+        pic = Image.open(io.BytesIO(picture)) #read bytestream to image
+        width, height = pic.size
+        if(width>height):
+            pic = pic.resize((800,500))
+        if(height>width):
+            pic = pic.resize((500,800)) # resize image
+        pic_byte_arr = io.BytesIO() # create empty bytearray
+        pic.save(pic_byte_arr, format='JPEG') #save picture to byte array
+        pic = pic_byte_arr.getvalue()  #get value of byte array
+        print(picture,file=sys.stderr)
+        i = changeProfPic(current_user.id, pic)
         print(i,file=sys.stderr)
         return redirect(url_for('profile'))
 

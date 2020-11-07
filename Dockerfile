@@ -9,6 +9,7 @@ RUN pip install flask-bcrypt
 RUN pip install bcrypt
 RUN pip install flask-login
 RUN pip install gunicorn
+RUN pip install pil
 
 #Bundling Source
 COPY . /app

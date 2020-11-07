@@ -6,7 +6,7 @@ import sys
 
 def connect():
     database = mysql.connector.connect(user='k7aqgz64ljyxr9w9',
-                                       password='jl2ymrryvog4t8hu',
+                                       password='j5zmy2v2ujgcjptt',
                                        host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
                                        database='mh4057an9aee5vxa'
                                        )
@@ -16,7 +16,7 @@ def connect():
 
 def rawConnect():
         database = mysql.connector.connect(user='k7aqgz64ljyxr9w9',
-                                           password='jl2ymrryvog4t8hu',
+                                           password='j5zmy2v2ujgcjptt',
                                            host='durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
                                            database='mh4057an9aee5vxa',
                                            raw=True
@@ -540,6 +540,7 @@ def addLike(title, user_id, activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
+            print(err,file=sys.stderr)
             conn.close()
             return err
 
@@ -558,6 +559,7 @@ def addLike(title, user_id, activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
+            print(err,file=sys.stderr)
             conn.close()
             return err
 
@@ -576,6 +578,7 @@ def addLike(title, user_id, activity_id):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database not found")
         else:
+            print(err,file=sys.stderr)
             conn.close()
             return err
 

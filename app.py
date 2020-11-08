@@ -343,8 +343,8 @@ def profile():
                 likes = 0  # Change for likes
 
                 a = {
-                    'title': activ[0],
-                    'description': activ[1],
+                    'title': activ[0].decode('"utf-8"'),
+                    'description': activ[1].decode('"utf-8"'),
                     'image': image,
                     'activity_id': activ[4]
                 }

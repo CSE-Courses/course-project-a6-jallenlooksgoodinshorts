@@ -353,12 +353,6 @@ def profileSettings():
     activities.reverse()
 
     i = getInfo(current_user.id)
-    print("THIS IS i[0]", flush=True)
-    print(i[0], flush=True)
-    print("THIS IS I", flush=True)
-    print(i, flush=True)
-    print("THIS IS GETINFO", flush=True)
-    print(getInfo(current_user.id), flush=True)
     info = {'about': i[0], 'interests': i[0],
             'location': i[0], 'gender': i[0], 'email': i[0]}
     picDb = getPic(current_user.id)

@@ -359,7 +359,7 @@ def profileSettings():
     print(i, flush=True)
     print("THIS IS GETINFO", flush=True)
     print(getInfo(current_user.id), flush=True)
-    info = {'about': (i[0]).decode('"utf-8"'), 'interests': i[0],
+    info = {'about': i[0], 'interests': i[0],
             'location': i[0], 'gender': i[0], 'email': i[0]}
     picDb = getPic(current_user.id)
     print(picDb, file=sys.stderr)

@@ -20,33 +20,18 @@
         <div class="col-5">
             <div class="card" style="border:solid 1px">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Location: {{ info.location[2] }}</span></li>
-                    <li class="list-group-item">Gender: {{ info.gender[3] }}</span></li>
-                    <li class="list-group-item">Email: {{ info.email[4] }}</span></li>
+                    <li class="list-group-item">Email: {{ info.email[4] }}<span id ="emailField"></span></li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="row two">
-        <div class="col-3">
-            <div class="card" style="border:solid 1px">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Posts: <span id="postStat">10</span></li>
-                    <li class="list-group-item">Activities Completed: <span id="activityStat">10</span></li>
-                    <li class="list-group-item">Followers: <span id="followerStat">7</span></li>
-                    <li class="list-group-item">Following: <span id="followingStat">12</span></li>
-                    <li class="list-group-item">Friends: <span id="friendStat">8</span></li>
-                    <li class="list-group-item">Comments: <span id="commentStat">15</span></li>
-                </ul>
-            </div>
-        </div>
 
-        <div class="col" id="detail">
+        <div class="col" id = "detail">
             <div class="card" style="width: 15rem;border: solid 1px;">
                 <ul class="list-group form-group">
-                    <li class="list-group-item">{{ info.about[0] }}</li>
-                    <li class="list-group-item ">{{ info.interests[1] }}</li>
+                    <li class="list-group-item">About: {{ info.about[0] }}</li>
+                    <li class="list-group-item ">Interests: {{ info.interests[1] }}</li>
                 </ul>
             </div>
         </div>

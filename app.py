@@ -360,7 +360,6 @@ def profileSettings():
 
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
-
     else:
         pic = None
     return render_template('profile.html', activities=activities, title='Activities', info=info, pic=pic)

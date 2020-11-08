@@ -325,9 +325,9 @@ def vprofile(user_id):
     return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo)
 
 
-@ app.route('/profile')
+@ app.route('/profilesetting')
 @ login_required
-def profile():
+def profileSettings():
     activityIDs = getActivityIDs(current_user.id)
     activities = []
     print("Current User ID", file=sys.stderr)
@@ -353,7 +353,13 @@ def profile():
     activities.reverse()
 
     i = getInfo(current_user.id)
-    info = {'about': (i[0][1]).decode('"utf-8"'), 'interests': i[0],
+    print("THIS IS i[0]", flush=True)
+    print(i[0], flush=True)
+    print("THIS IS I", flush=True)
+    print(i, flush=True)
+    print("THIS IS GETINFO", flush=True)
+    print(getInfo(current_user.id), flush=True)
+    info = {'about': (i[0]).decode('"utf-8"'), 'interests': i[0],
             'location': i[0], 'gender': i[0], 'email': i[0]}
     picDb = getPic(current_user.id)
     print(picDb, file=sys.stderr)

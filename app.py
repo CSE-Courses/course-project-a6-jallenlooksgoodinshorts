@@ -185,7 +185,7 @@ def activity(activity_id):
         buff = writecomment(current_user.id, activity_id, body)
         return redirect(url_for('activity', activity_id=activity_id))
 
-    return render_template('activity.html', activity=a, comments=comments, title='Activity', members=members, form=form, likeStatus=likeStatus, likes=likes)
+    return render_template('activity.html', comments=comments, title='Activity', members=members, form=form, likeStatus=likeStatus, likes=likes)
 
 
 @app.route('/newpost', methods=['GET', 'POST'])

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
 from db import userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment
-from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm
+from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm, securityForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
 import bcrypt

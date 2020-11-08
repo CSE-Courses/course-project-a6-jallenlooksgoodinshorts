@@ -115,7 +115,7 @@ def activityfeed():
 
     activities.reverse()
 
-    return render_template('feed.html', activities=activities, activity=a, title='Activities', likes=likes, likeStatus=likeStatus)
+    return render_template('feed.html', activities=activities, title='Activities', likes=likes, likeStatus=likeStatus)
 
 
 @app.route('/activity/<int:activity_id>', methods=['GET', 'POST'])

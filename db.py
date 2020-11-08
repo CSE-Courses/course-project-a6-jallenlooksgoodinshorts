@@ -421,7 +421,7 @@ def getcomments(activity_id):
 
 
 def getInfo(username):
-    inputComand = "SELECT about, interests, location, gender, username, password, email FROM users WHERE email = (%s)"
+    inputComand = "SELECT about, interests, location, gender, email FROM users WHERE email = (%s)"
     print(username, file=sys.stderr)
     try:
         conn = connect()
@@ -508,6 +508,7 @@ def getPic(username):
             conn.close()
         return ['No database access', 'No database access']
 
+
 def updateSentiments(activity_id, happy, neutral, sad, totalComments):
 
     print("Sentiment Values", file=sys.stderr)
@@ -516,12 +517,12 @@ def updateSentiments(activity_id, happy, neutral, sad, totalComments):
     print(sad, file=sys.stderr)
     print(totalComments, file=sys.stderr)
 
-
     inputComand = "UPDATE activities SET happy = %s, neutral = %s, sad = %s, totalcomments = %s WHERE activity_id = (%s)"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
-        statement.execute(inputComand, (happy, neutral, sad, totalComments, activity_id,))
+        statement.execute(inputComand, (happy, neutral,
+                                        sad, totalComments, activity_id,))
         conn.commit()
         statement.close()
         conn.close()
@@ -551,7 +552,6 @@ def checkLikeDB(user_id, activity_id):
             return True
         else:
             return False
-        
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

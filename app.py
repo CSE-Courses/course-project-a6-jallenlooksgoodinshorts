@@ -353,36 +353,17 @@ def profile():
     activities.reverse()
 
     i = getInfo(current_user.id)
-
-    info = {'about': i[0], 'interests': i[0],
+    info = {'about': (i[0][1]).decode('"utf-8"'), 'interests': i[0],
             'location': i[0], 'gender': i[0], 'email': i[0]}
     picDb = getPic(current_user.id)
     print(picDb, file=sys.stderr)
+
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 
     else:
         pic = None
     return render_template('profile.html', activities=activities, title='Activities', info=info, pic=pic)
-
-
-@ app.route('/profileSettings')
-@ login_required
-def profileSettings():
-    print("Current User ID", file=sys.stderr)
-    print(current_user.id, file=sys.stderr)
-
-    i = getInfo(current_user.id)
-
-    info = {'about': i[0], 'interests': i[0],
-            'location': i[0], 'gender': i[0], 'email': i[0]}
-    picDb = getPic(current_user.id)
-    if(picDb != None):
-        pic = b64encode(picDb[0]).decode('"utf-8"')
-
-    else:
-        pic = None
-    return render_template('settings.html', info=info, pic=pic)
 
 
 @app.route('/editProfile', methods=['GET', 'POST'])

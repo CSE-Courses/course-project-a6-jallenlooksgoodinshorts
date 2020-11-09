@@ -250,8 +250,8 @@ def getAllActivities():
 def getActivity(activity_id):
     inputCommand = "SELECT title, description, image, likes, activity_id, happy, neutral, sad, totalcomments FROM activities WHERE activity_id = (%s)"
     try:
-        conn = rawConnect()
-        statement = conn.cursor()
+        conn = connect()
+        statement = conn.cursor(prepared=True)
         statement.execute(inputCommand, (activity_id,))
 
         rs = statement.fetchone()

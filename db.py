@@ -429,9 +429,9 @@ def getInfo(username):
         conn = connect()
 
         statement = conn.cursor(prepared=True)
-        statement.execute(inputComand, (username,), multi=True)
+        statement.execute(inputComand, (username,))
 
-        return statement.fetchall()
+        return statement.fetchone()
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

@@ -346,8 +346,8 @@ def profile():
                 likes = 0  # Change for likes
 
                 a = {
-                    'title': activ[0],
-                    'description': activ[1],
+                    'title': activ[0].decode(),
+                    'description': activ[1].decode(),
                     'image': image,
                     'activity_id': activ[4]
                 }
@@ -358,7 +358,12 @@ def profile():
     i = getInfo(current_user.id)
 
 
-    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+    info = {
+        'about':i[0].decode(), 
+        'interests':i[1].decode(), 
+        'location':i[2], 
+        'gender':i[3].decode(), 
+        'email':i[4].decode()}
     picDb = getPic(current_user.id)
 
     if(picDb != None):

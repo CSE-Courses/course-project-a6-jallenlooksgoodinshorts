@@ -126,13 +126,21 @@ def activity(activity_id):
     image = b64encode(activ[2]).decode('"utf-8"')
     likes = getLikes(activity_id)  # Changed for likes
 
+    happydisplay = None
+    
+    if activ[8] != 0 :
+        num = int(round(((activ[5] * 100) / activ[8]), 2))
+        happydisplay = "People are " + str(num) + "% happy with this activity"
+    else :
+        happydisplay = "Not enough coments to see how happy people are with this activity."
+
     a = {
         'title': activ[0].decode(),
         'description': activ[1].decode(),
         'image': image,
         'activity_id': activ[4],
         'likes': likes,
-        'happy': int(round(((activ[5] * 100) / activ[8]), 2))
+        'happy': happydisplay
     }
 
     # Setting the sentiments for the activity
@@ -185,7 +193,7 @@ def activity(activity_id):
         buff = writecomment(current_user.id, activity_id, body)
         return redirect(url_for('activity', activity_id=activity_id))
 
-    return render_template('activity.html', comments=comments, title='Activity', members=members, form=form, likeStatus=likeStatus, likes=likes)
+    return render_template('activity.html', comments=comments, title='Activity', members=members, form=form, activity=a, likeStatus=likeStatus, likes=likes)
 
 
 @app.route('/newpost', methods=['GET', 'POST'])

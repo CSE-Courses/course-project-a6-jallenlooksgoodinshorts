@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
-from db import userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment
+from db import userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment,settings
 from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm, securityForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -349,9 +349,10 @@ def profile():
 
     i = getInfo(current_user.id)
 
-    info = {'about':i[0].decode(), 'interests':i[0].decode(), 'location':i[0].decode(), 'gender':i[0].decode(), 'email':i[0].decode()}
+
+    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
     picDb = getPic(current_user.id)
-    print(picDb,file=sys.stderr)
+
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 
@@ -367,7 +368,7 @@ def profileSettings():
 
     i = getInfo(current_user.id)
 
-    info = {'about':i[0].decode(), 'interests':i[0].decode(), 'location':i[0].decode(), 'gender':i[0].decode(), 'email':i[0].decode()}
+    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
     picDb = getPic(current_user.id)
     print(picDb,file=sys.stderr)
     if(picDb != None):

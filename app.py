@@ -357,7 +357,7 @@ def profile():
 
     i = getInfo(current_user.id)
 
-    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+    info = {'about':i[0].decode(), 'interests':i[0].decode(), 'location':i[0].decode(), 'gender':i[0].decode(), 'email':i[0].decode()}
     picDb = getPic(current_user.id)
     print(picDb,file=sys.stderr)
     if(picDb != None):
@@ -375,7 +375,7 @@ def profileSettings():
 
     i = getInfo(current_user.id)
 
-    info = {'about':i[0], 'interests':i[0], 'location':i[0], 'gender':i[0], 'email':i[0]}
+    info = {'about':i[0].decode(), 'interests':i[0].decode(), 'location':i[0].decode(), 'gender':i[0].decode(), 'email':i[0].decode()}
     picDb = getPic(current_user.id)
     print(picDb,file=sys.stderr)
     if(picDb != None):

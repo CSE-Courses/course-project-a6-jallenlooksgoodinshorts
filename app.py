@@ -78,7 +78,7 @@ def browse():
 
     activities.reverse()
 
-    return render_template('browse.html', activities=activities, title='Welcome', likes=likes, likeStatus=likeStatus)
+    return render_template('browse.html', activities=activities, title='Welcome')
 
 
 @app.route('/activityfeed', methods=['GET', 'POST'])
@@ -115,7 +115,7 @@ def activityfeed():
 
     activities.reverse()
 
-    return render_template('feed.html', activities=activities, title='Activities', likes=likes, likeStatus=likeStatus)
+    return render_template('feed.html', activities=activities, title='Activities')
 
 
 @app.route('/activity/<int:activity_id>', methods=['GET', 'POST'])

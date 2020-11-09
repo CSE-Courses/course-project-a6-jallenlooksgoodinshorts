@@ -1,0 +1,38 @@
+{% extends 'head.html' %}
+{% from '_adisplay.html' import activity_display %}
+{% block content %}
+
+{% include "partials/settingsSidebar.html" %}
+
+
+<div class="container">
+    <div class="row form-group">
+        <div class="col-6">
+            <div class="card" style="height: 15vw;width: 20vw; border:solid 1px;">
+                <img src="data:;base64,{{ pic }}" class="card-img">
+                <div class="card-body">
+                    <a href="{{ url_for('editProfPic')}}" class="btn btn-primary mx-auto form-group" style="width:8rem;">Change Profile Picture</p></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col" id = "detail">
+            <div class="card" style="width: 15rem;border: solid 1px;">
+                <ul class="list-group form-group">
+                    <li class="list-group-item">{{ info.about[0] }}</li>
+                    <li class="list-group-item ">{{ info.interests[1] }}</li>
+                </ul>
+                <a href="{{ url_for('editinfo')}}" class="btn btn-primary mx-auto form-group" style="width:8rem;">Edit Info</p></a>
+          </div>
+      </div>
+    </div>
+
+
+
+    </div>
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+{% endblock content %}

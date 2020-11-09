@@ -46,7 +46,7 @@ testConn()
 bcrypt = Bcrypt(app)
 
 
-
+@app.route('/')
 @app.route('/home')
 def home():
     return render_template('home.html', title='Home')
@@ -213,7 +213,6 @@ def newpost():
 
     return render_template('newPost.html', title='Post', form=form)
 
-@app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
-from db import userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment,settings
+from db import getPassword, userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment,settings
 from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm, securityForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -218,9 +218,15 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
-        hashedPassword = form.password.data
+        unhashedPassword = form.password.data
 
-        if loginUser(email, hashedPassword):
+        hashedPassword = getPassword(email)
+
+        print("PASSWORDS", file=sys.stderr)
+        print(unhashedPassword, file=sys.stderr)
+        print(hashedPassword, file=sys.stderr)
+
+        if bcrypt.check_password_hash(hashedPassword[0].decode(), unhashedPassword):
             signedIn = User(email)
             login_user(signedIn)
             return redirect(url_for('browse'))
@@ -240,8 +246,10 @@ def register():
         firstName = form.firstname.data
         lastName = form.lastname.data
         email = form.email.data
-        hashedPassword = form.password.data
+        password = form.password.data
         username = form.username.data
+
+        hashedPassword = bcrypt.generate_password_hash(password).decode('utf-8')
 
         newUser(email, hashedPassword, firstName, lastName, username)
 

@@ -89,6 +89,25 @@ def loginUser(username, password):
             conn.close()
 
             return False
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+    else:
+        return False
+
+def getPassword(username):
+    inputCommand = "SELECT password FROM users WHERE email = (%s) "
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand, (username,))
+        rs = statement.fetchone()
+        statement.close()
+        conn.close()
+
+        return rs
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

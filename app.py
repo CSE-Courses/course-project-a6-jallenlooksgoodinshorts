@@ -309,6 +309,7 @@ def searchprofile():
 def vprofile(user_id):
     activityIDs = getActivityIDs(user_id)
     returnedInfo = userInfo(user_id)
+    profPic = getPic(user_id)
     print("RETURNEDINFO", flush=True)
     print(returnedInfo, flush=True)
     activities = []
@@ -337,7 +338,7 @@ def vprofile(user_id):
 
     activities.reverse()
 
-    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo)
+    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo, profPic=profPic)
 
 
 @ app.route('/profile')

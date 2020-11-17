@@ -218,9 +218,14 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
-        hashedPassword = form.password.data
+        unhashedPassword = form.password.data
+        hashedPassword = getPassword(email)
 
-        if db.loginUser(email, hashedPassword):
+        print("PASSWORDS", file=sys.stderr)
+        print(unhashedPassword, file=sys.stderr)
+        print(hashedPassword, file=sys.stderr)
+
+        if bcrypt.check_password_hash(hashedPassword[0].decode(), unhashedPassword):
             signedIn = User(email)
             login_user(signedIn)
             return redirect(url_for('browse'))
@@ -240,10 +245,14 @@ def register():
         firstName = form.firstname.data
         lastName = form.lastname.data
         email = form.email.data
-        hashedPassword = form.password.data
+        password = form.password.data
         username = form.username.data
 
+
+        hashedPassword = bcrypt.generate_password_hash(password).decode('utf-8')
+
         db.newUser(email, hashedPassword, firstName, lastName, username)
+
 
         with open('userpass.txt', mode='w') as csvfile:
             writeme = csv.writer(csvfile)

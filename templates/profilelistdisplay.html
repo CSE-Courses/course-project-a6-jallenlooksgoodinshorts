@@ -1,19 +1,9 @@
 {% macro profilelist_display(profilecard) %}
 
-<br>
-<div class="container col-6">
-  <div class="card mb-3">
-    <div class="row">
-      <div class="col-sm-4  align-self-left">
-      </div>
-      <div class="col-sm">
-        <h3 class="card-title blue">
-          <a href="{{ url_for('vprofile' , user_id = profilecard ) }}" type="button" class="btn nav_button_primary btn-primary btn-sm">Click here to Visit {{ profilecard }}</a>
-        </h5>
-       </div>
-      </div>
-    </div>
-  </div>
+<div class="card w-100">
+  <a href="{{ url_for('vprofile' , user_id = profilecard ) }}" type="button" class="btn nav_button_primary btn-primary"
+    style="font-size: 12px;">Click here to Visit </br>
+    {{ profilecard }}</a>
 </div>
 
 {% endmacro %}

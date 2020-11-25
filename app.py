@@ -49,7 +49,31 @@ bcrypt = Bcrypt(app)
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html', title='Home')
+
+    activityList = db.getFirstThree()
+    activities = []
+
+    for activ in activityList:
+        image = b64encode(activ[2]).decode('"utf-8"')
+        likes = db.getLikes(activ[4])  # Changed for likes
+        if(current_user.is_anonymous == False):
+            likeStatus = db.checkLikeDB(current_user.id, activ[4])
+        else:
+            likeStatus = False
+        a = {
+            'title': activ[0],
+            'description': activ[1],
+            'image': image,
+            'activity_id': activ[4],
+            'likes': likes,
+            'likeStatus': likeStatus
+
+        }
+        activities.append(a)
+
+    activities.reverse()
+
+    return render_template('home.html', activities=activities, title='Home')
 
 
 @app.route('/browse', methods=['GET', 'POST'])
@@ -195,7 +219,6 @@ def activity(activity_id):
 
     return render_template('activity.html', comments=comments, title='Activity', members=members, form=form, activity=a, likeStatus=likeStatus, likes=likes)
 
-
 @app.route('/newpost', methods=['GET', 'POST'])
 @login_required
 def newpost():
@@ -219,7 +242,7 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         unhashedPassword = form.password.data
-        hashedPassword = getPassword(email)
+        hashedPassword = db.getPassword(email)
 
         print("PASSWORDS", file=sys.stderr)
         print(unhashedPassword, file=sys.stderr)

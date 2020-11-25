@@ -243,6 +243,28 @@ def createActivity(title, description, image, likes):  # updated for likes
     else:
         return False
 
+def getFirstThree():
+    inputCommand = "SELECT title, description, image, likes, activity_id FROM activities ORDER BY activity_id DESC LIMIT 3;"
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        x = ()
+        statement.execute(inputCommand, x)
+
+        rs = statement.fetchall()
+
+        return rs
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+        return False
+
+
 
 def getAllActivities():
     inputCommand = "SELECT title, description, image, likes, activity_id FROM activities"

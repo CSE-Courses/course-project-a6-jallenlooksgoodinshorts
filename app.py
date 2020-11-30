@@ -430,7 +430,7 @@ def profileSettings():
 
     else:
         pic = None
-    return render_template('db.settings.html', info=info, pic=pic)
+    return render_template('settings.html', info=info, pic=pic)
 
 @app.route('/editProfile', methods = ['GET', 'POST'])
 @login_required

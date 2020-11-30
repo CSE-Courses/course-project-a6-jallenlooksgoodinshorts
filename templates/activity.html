@@ -62,7 +62,7 @@
         <section class="mood">
           <div class="row">
             <div class="col text-center">
-              <div class="mood-percentage card-text">{{ activity.happy }}</div>
+              <div class="mood-percentage card-text" style="font: 16px;">{{ activity.happy }}</div>
             </div>
           </div>
         </section>
@@ -71,21 +71,20 @@
           <p><strong> {{ comment.username }}: </strong> {{ comment.body }}</p>
           {% endfor %}
         </div>
-      </div>
-      <div class="card mb-3">
-        <h5 class="card-header">Write a Comment:</h5>
-        <form action="" method="post" enctype="multipart/form-data">
-          <fieldset class="form-group">
-            {{ form.hidden_tag() }}
-            <p>
-              {{ form.comment(class = "form-control form-control-lg") }}<br>
-            </p>
-            <p>
-            <p>
-              {{ form.submit(class = "btn btn-primary btn-lg") }}
-            </p>
-          </fieldset>
-        </form>
+        <div class="card mb-3" style="background-color: lightgray;">
+          <form action="" method="post" enctype="multipart/form-data">
+            <fieldset class="form-group">
+              {{ form.hidden_tag() }}
+              <p>
+                {{ form.comment(class = "form-control form-control-lg") }}<br>
+              </p>
+              <p>
+              <p>
+                {{ form.submit(class = "btn btn-primary btn-lg") }}
+              </p>
+            </fieldset>
+          </form>
+        </div>
       </div>
     </div>
   </div>

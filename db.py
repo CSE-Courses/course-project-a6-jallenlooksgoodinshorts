@@ -97,6 +97,7 @@ def loginUser(username, password):
     else:
         return False
 
+
 def getPassword(username):
     inputCommand = "SELECT password FROM users WHERE email = (%s) "
     try:

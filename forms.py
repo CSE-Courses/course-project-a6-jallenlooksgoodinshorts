@@ -32,7 +32,7 @@ class PostForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     comment = TextAreaField('Comment', validators=[InputRequired()])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Comment')
     
 class EditForm(FlaskForm):
     location = StringField('Location')

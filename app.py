@@ -162,11 +162,11 @@ def activity(activity_id):
     likes = db.getLikes(activity_id)  # Changed for likes
 
     happydisplay = None
-    
-    if activ[8] != 0 :
+
+    if activ[8] != 0:
         num = int(round(((activ[5] * 100) / activ[8]), 2))
         happydisplay = "People are " + str(num) + "% happy with this activity"
-    else :
+    else:
         happydisplay = "Not enough coments to see how happy people are with this activity."
 
     a = {
@@ -248,6 +248,7 @@ def newpost():
 
     return render_template('newPost.html', title='Post', form=form, pic=pic)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -283,11 +284,10 @@ def register():
         password = form.password.data
         username = form.username.data
 
-
-        hashedPassword = bcrypt.generate_password_hash(password).decode('utf-8')
+        hashedPassword = bcrypt.generate_password_hash(
+            password).decode('utf-8')
 
         db.newUser(email, hashedPassword, firstName, lastName, username)
-
 
         with open('userpass.txt', mode='w') as csvfile:
             writeme = csv.writer(csvfile)
@@ -421,13 +421,12 @@ def profile():
 
     i = db.getInfo(current_user.id)
 
-
     info = {
-        'about':i[0].decode(), 
-        'interests':i[1].decode(), 
-        'location':i[2], 
-        'gender':i[3].decode(), 
-        'email':i[4].decode()}
+        'about': i[0].decode(),
+        'interests': i[1].decode(),
+        'location': i[2],
+        'gender': i[3].decode(),
+        'email': i[4].decode()}
     picDb = db.getPic(current_user.id)
 
     if(picDb != None):
@@ -437,6 +436,7 @@ def profile():
         pic = None
     return render_template('profile.html', activities=activities, title='Activities', info=info, pic=pic)
 
+
 @ app.route('/profileSettings')
 @ login_required
 def profileSettings():
@@ -445,9 +445,10 @@ def profileSettings():
 
     i = db.getInfo(current_user.id)
 
-    info = {'about':i[0].decode(), 'interests':i[0].decode(), 'location':i[0], 'gender':i[0], 'email':i[0]}
+    info = {'about': i[0].decode(), 'interests': i[0].decode(
+    ), 'location': i[0], 'gender': i[0], 'email': i[0]}
     picDb = db.getPic(current_user.id)
-    print(picDb,file=sys.stderr)
+    print(picDb, file=sys.stderr)
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 
@@ -455,13 +456,14 @@ def profileSettings():
         pic = None
     return render_template('settings.html', info=info, pic=pic)
 
-@app.route('/editProfile', methods = ['GET', 'POST'])
+
+@app.route('/editProfile', methods=['GET', 'POST'])
 @login_required
 def editInfo():
     form = EditForm()
 
     if form.validate_on_submit():
-        print(current_user.id,file=sys.stderr)
+        print(current_user.id, file=sys.stderr)
         about = form.about.data
         interests = form.interests.data
         location = form.location.data
@@ -475,25 +477,25 @@ def editInfo():
             location = i[0][2]
         if(gender == ""):
             gender = i[0][3]
-        print(about,file=sys.stderr)
+        print(about, file=sys.stderr)
         print(interests, file=sys.stderr)
 
-
         db.editInfo(current_user.id, about, interests, location, gender)
-        print(form.errors,file=sys.stderr)
+        print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
+
     print(form.errors,file=sys.stderr)
     pic = getProfPic(current_user.id)
 
     return render_template('editProfile.html', title = 'Edit', form=form,pic=pic)
 
-@app.route('/securitySettings', methods = ['GET', 'POST'])
+@app.route('/securitySettings', methods=['GET', 'POST'])
 @login_required
 def editSettings():
     form = securityForm()
 
     if form.validate_on_submit():
-        print(current_user.id,file=sys.stderr)
+        print(current_user.id, file=sys.stderr)
         username = form.username.data
         password = form.password.data
         i = db.getInfo(current_user.id)
@@ -502,25 +504,26 @@ def editSettings():
         if(password == ""):
             password = i[0][6]
         db.settings(username, password, current_user.id)
-        print(form.errors,file=sys.stderr)
+        print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
+
     print(form.errors,file=sys.stderr)
     pic = getProfPic(current_user.id)
 
     return render_template('securitySettings.html', title = 'Edit', form=form,pic=pic)
 
 
-
-@app.route('/changePicture', methods = ['GET', 'POST'])
+@app.route('/changePicture', methods=['GET', 'POST'])
 @login_required
 def editProfPic():
     form = ChangeProfilePicture()
     if form.validate_on_submit():
         picture = form.picture.data.read()
         i = db.changeProfPic(current_user.id, picture)
-        print(i,file=sys.stderr)
+        print(i, file=sys.stderr)
         return redirect(url_for('profile'))
     pic = getProfPic(current_user.id)
+
 
     return render_template('changePicture.html', title = 'Profile Picture', form=form,pic=pic)
 

@@ -34,6 +34,15 @@ class User(UserMixin):
         user = User(id)
         return user
 
+def getProfPic(user_id):
+    picDb = getPic(user_id)
+    if(picDb != None):
+        pic = b64encode(picDb[0]).decode('"utf-8"')
+
+    else:
+        pic = None
+    return pic
+
 
 @login_manager.user_loader
 def load_user(id):
@@ -49,7 +58,31 @@ bcrypt = Bcrypt(app)
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html', title='Home')
+
+    activityList = db.getFirstThree()
+    activities = []
+
+    for activ in activityList:
+        image = b64encode(activ[2]).decode('"utf-8"')
+        likes = db.getLikes(activ[4])  # Changed for likes
+        if(current_user.is_anonymous == False):
+            likeStatus = db.checkLikeDB(current_user.id, activ[4])
+        else:
+            likeStatus = False
+        a = {
+            'title': activ[0],
+            'description': activ[1],
+            'image': image,
+            'activity_id': activ[4],
+            'likes': likes,
+            'likeStatus': likeStatus
+
+        }
+        activities.append(a)
+
+    activities.reverse()
+
+    return render_template('home.html', activities=activities, title='Home')
 
 
 @app.route('/browse', methods=['GET', 'POST'])
@@ -77,8 +110,9 @@ def browse():
         activities.append(a)
 
     activities.reverse()
+    pic = getProfPic(current_user.id)
 
-    return render_template('browse.html', activities=activities, title='Welcome')
+    return render_template('browse.html', activities=activities, title='Welcome', pic=pic)
 
 
 @app.route('/activityfeed', methods=['GET', 'POST'])
@@ -114,8 +148,9 @@ def activityfeed():
                 activities.append(a)
 
     activities.reverse()
+    pic = getProfPic(current_user.id)
 
-    return render_template('feed.html', activities=activities, title='Activities')
+    return render_template('feed.html', activities=activities, title='Activities', pic=pic)
 
 
 @app.route('/activity/<int:activity_id>', methods=['GET', 'POST'])
@@ -195,7 +230,6 @@ def activity(activity_id):
 
     return render_template('activity.html', comments=comments, title='Activity', members=members, form=form, activity=a, likeStatus=likeStatus, likes=likes)
 
-
 @app.route('/newpost', methods=['GET', 'POST'])
 @login_required
 def newpost():
@@ -210,8 +244,9 @@ def newpost():
         db.joinActivityDB(current_user.id, activity_id)
 
         return redirect(url_for('browse'))
+    pic = getProfPic(current_user.id)
 
-    return render_template('newPost.html', title='Post', form=form)
+    return render_template('newPost.html', title='Post', form=form, pic=pic)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -220,7 +255,7 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         unhashedPassword = form.password.data
-        hashedPassword = getPassword(email)
+        hashedPassword = db.getPassword(email)
 
         print("PASSWORDS", file=sys.stderr)
         print(unhashedPassword, file=sys.stderr)
@@ -299,17 +334,39 @@ def searchprofile():
 
         print("Returned Info Result ------------", file=sys.stderr)
         print(returnedInfo, file=sys.stderr)
+        pic = getProfPic(current_user.id)
 
-        return render_template('profileinquiry.html', title='search', form=form, returnedInfo=returnedInfo)
+        return render_template('profileinquiry.html', title='search', form=form, returnedInfo=returnedInfo, pic=pic)
+    pic = getProfPic(current_user.id)
 
-    return render_template('profileinquiry.html', title='search', form=form)
+    return render_template('profileinquiry.html', title='search', form=form,pic=pic)
 
 
 @ app.route('/otherprofile/<string:user_id>', methods=['GET', 'POST'])
 @ login_required
 def vprofile(user_id):
+
+    activityIDs = getActivityIDs(user_id)
+    returnedInfo = userInfo(user_id)
+    print(user_id, file=sys.stderr)
+    picDb = getPic(user_id)
+    if(picDb != None):
+        profPic = b64encode(picDb[0]).decode('"utf-8"')
+
+    else:
+        profPic = None
+    pic = getPic(current_user.id)
+    if(pic != None):
+        pic = b64encode(pic[0]).decode('"utf-8"')
+
+    else:
+        pic = None
+
+
+
     activityIDs = db.getActivityIDs(user_id)
     returnedInfo = db.userInfo(user_id)
+
     print("RETURNEDINFO", flush=True)
     print(returnedInfo, flush=True)
     activities = []
@@ -337,8 +394,7 @@ def vprofile(user_id):
                 activities.append(a)
 
     activities.reverse()
-
-    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo)
+    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo, pic=pic, profPic=profPic)
 
 
 @ app.route('/profile')
@@ -398,7 +454,7 @@ def profileSettings():
 
     else:
         pic = None
-    return render_template('db.settings.html', info=info, pic=pic)
+    return render_template('settings.html', info=info, pic=pic)
 
 
 @app.route('/editProfile', methods=['GET', 'POST'])
@@ -427,9 +483,11 @@ def editInfo():
         db.editInfo(current_user.id, about, interests, location, gender)
         print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
-    print(form.errors, file=sys.stderr)
-    return render_template('editProfile.html', title='Edit', form=form)
 
+    print(form.errors,file=sys.stderr)
+    pic = getProfPic(current_user.id)
+
+    return render_template('editProfile.html', title = 'Edit', form=form,pic=pic)
 
 @app.route('/securitySettings', methods=['GET', 'POST'])
 @login_required
@@ -448,8 +506,11 @@ def editSettings():
         db.settings(username, password, current_user.id)
         print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
-    print(form.errors, file=sys.stderr)
-    return render_template('securitySettings.html', title='Edit', form=form)
+
+    print(form.errors,file=sys.stderr)
+    pic = getProfPic(current_user.id)
+
+    return render_template('securitySettings.html', title = 'Edit', form=form,pic=pic)
 
 
 @app.route('/changePicture', methods=['GET', 'POST'])
@@ -461,8 +522,10 @@ def editProfPic():
         i = db.changeProfPic(current_user.id, picture)
         print(i, file=sys.stderr)
         return redirect(url_for('profile'))
+    pic = getProfPic(current_user.id)
 
-    return render_template('changePicture.html', title='Profile Picture', form=form)
+
+    return render_template('changePicture.html', title = 'Profile Picture', form=form,pic=pic)
 
 
 @app.route('/logout')

@@ -348,16 +348,15 @@ def searchprofile():
 @ login_required
 def vprofile(user_id):
 
-    activityIDs = getActivityIDs(user_id)
-    returnedInfo = userInfo(user_id)
+
     print(user_id, file=sys.stderr)
-    picDb = getPic(user_id)
+    picDb = db.getPic(user_id)
     if(picDb != None):
         profPic = b64encode(picDb[0]).decode('"utf-8"')
 
     else:
         profPic = None
-    pic = getPic(current_user.id)
+    pic = db.getPic(current_user.id)
     if(pic != None):
         pic = b64encode(pic[0]).decode('"utf-8"')
 

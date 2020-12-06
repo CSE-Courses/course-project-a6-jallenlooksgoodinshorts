@@ -234,7 +234,9 @@ def activity(activity_id):
 @login_required
 def newpost():
     form = PostForm()
+    print("newpost page", file=sys.stderr)
     if form.validate_on_submit():
+        print("validated", file=sys.stderr)
         title = form.title.data
         description = form.body.data
         image = form.image.data.read()
@@ -244,9 +246,9 @@ def newpost():
         db.joinActivityDB(current_user.id, activity_id)
 
         return redirect(url_for('browse'))
-    pic = getProfPic(current_user.id)
+    
 
-    return render_template('newPost.html', title='Post', form=form, pic=pic)
+    return render_template('newPost.html', title='Post', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])

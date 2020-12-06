@@ -27,7 +27,7 @@ class ProfileLookupForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     body = TextAreaField('Body', validators=[DataRequired()])
-    image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg'])])
+    image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg','.jpg','.jpeg'])])
     submit = SubmitField('Create Activity')
 
 class CommentForm(FlaskForm):

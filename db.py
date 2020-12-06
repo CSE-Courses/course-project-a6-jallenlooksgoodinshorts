@@ -713,3 +713,25 @@ def getLikes(activity_id):
             print(err, file=sys.stderr)
             conn.close()
             return False
+
+def deleteActivity(activity_id):
+    inputCommand = "DELETE FROM activities WHERE activity_id = (%s)"
+
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputCommand, (activity_id,))
+        conn.commit()
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            print(err, file=sys.stderr)
+            return False

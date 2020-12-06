@@ -35,7 +35,7 @@ class User(UserMixin):
         return user
 
 def getProfPic(user_id):
-    picDb = getPic(user_id)
+    picDb = db.getPic(user_id)
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 

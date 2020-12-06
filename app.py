@@ -175,7 +175,9 @@ def activity(activity_id):
         'image': image,
         'activity_id': activ[4],
         'likes': likes,
-        'happy': happydisplay
+        'happy': happydisplay,
+        'current_id': current_user.id,
+        'creator_id': activ[9].decode()
     }
 
     # Setting the sentiments for the activity

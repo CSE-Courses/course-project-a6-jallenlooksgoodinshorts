@@ -748,3 +748,89 @@ def deleteActivity(activity_id):
             conn.close()
             print(err, file=sys.stderr)
             return False
+
+def blockUser(blocker, blockee):
+    inputValues = "INSERT INTO blockedusers (blocker_id, blockee_id) VALUES(%s,%s);"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputValues, (blocker, blockee,))  # updated for likes
+        conn.commit()
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+    else:
+        return False
+
+
+def blockUser(blocker, blockee):
+    inputValues = "INSERT INTO blockedusers (blocker_id, blockee_id) VALUES(%s,%s);"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputValues, (blocker, blockee,))  # updated for likes
+        conn.commit()
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+    else:
+        return False
+
+def checkBlock(blocker, blockee):
+    inputCommand = "SELECT * FROM blockedusers WHERE (blocker_id = %s AND blockee_id = %s)"
+
+    try:
+        conn = connect()
+        statement = conn.cursor()
+        statement.execute(inputCommand, (blocker, blockee,))
+
+        rs = statement.fetchone()
+        statement.close()
+        conn.close()
+        print("SQL RS", file=sys.stderr)
+        print(rs, file=sys.stderr)
+        
+        if rs is not None:
+            return True
+        else:
+            return False
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Access Denied Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database not found")
+        else:
+            conn.close()
+            return err
+
+def unblockUser(blocker, blockee):
+    inputValues = "DELETE FROM blockedusers WHERE (blocker_id = (%s) AND blockee_id = (%s))"
+    try:
+        conn = connect()
+        statement = conn.cursor(prepared=True)
+        statement.execute(inputValues, (blocker, blockee,))
+        conn.commit()
+
+        statement.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print('Username/password issue')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('databse not found')
+    else:
+        return False

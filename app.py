@@ -175,7 +175,9 @@ def activity(activity_id):
         'image': image,
         'activity_id': activ[4],
         'likes': likes,
-        'happy': happydisplay
+        'happy': happydisplay,
+        'current_id': current_user.id,
+        'creator_id': activ[9].decode()
     }
 
     # Setting the sentiments for the activity
@@ -240,7 +242,7 @@ def newpost():
         title = form.title.data
         description = form.body.data
         image = form.image.data.read()
-        activity_id = db.createActivity(title, description, image, 0)
+        activity_id = db.createActivity(title, description, image, 0, current_user.id)
         print("Activity ID", file=sys.stderr)
         print(activity_id, file=sys.stderr)
         db.joinActivityDB(current_user.id, activity_id)
@@ -553,6 +555,13 @@ def unlikepost(activity_id):
     db.removeLike(current_user.id, activ[4])
     return('', 204)
 
+@app.route('/deleteactivity/<int:activity_id>', methods=['GET', 'POST'])
+@login_required
+def deleteactivity(activity_id):
+    owner = db.getActivity(activity_id)
+    if (current_user.id == owner[9].decode()): # Should verify that the owner is the same. --------- VERIFY USING PRINT
+        db.deleteActivity(activity_id)
+    return redirect(url_for('browse'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

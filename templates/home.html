@@ -1,33 +1,57 @@
 {% extends 'head.html' %}
+{% from '_adisplay.html' import guest_activity_display %}
 {% block content %}
 
 <div class="container">
-    <div class="row justify-content-md-center">
-        <div class="text-center">
+    <div class="text-center">
+        <h1 class="my-5">Quarentivities</h1>
 
-            <h1 class="my-5">Quarentivities</h1>
+        <hr class="mb-5">
+        <h1 class="my-5">Our Purpose</h1>
 
-            <hr class="mb-5">
-            <h1 class="my-5">Our Purpose:</h1>
-
-            <hr class="mb-5">
-            <p class="h5">We have all been affected by COVID-19 and could not imagine being a young kid or a parent during this hard time.</p>
-
-            <hr class="mb-5">
-            <p class="h5">Our goal in creating Quarentivities was to build a community of parents, kids, and families to connect and share in activites and fun ideas. While we cannot replace the fun we had growing up, we hope to make it easier for kids to enjoy themselves during these isolating times.</p>
-
-            <h3 class="my-5">How to participate:</h3>
-            <p class="h5">We encourage you and your family to find activities that you find exiting and participate in them together! Share your progress, encourage others, and create your own activities to help build this community online.</p>
-
-            <h3 class="my-5">Site rules:</h3>
-            <p class="h5">1. Be positive and inclusive.</p>
-            <p class="h5">2. No harassment or inappropriate conduct.</p>
-            <p class="h5">3. Do not spam users.</p>
-            <p class="h5">4. Dont't feed the trolls.</p>
-            <p class="h5">5. Don't post anything illegal.</p>
-
-		
-		</div>
+        <p class="h4">We have all been affected by COVID-19 and could not imagine being a young kid or a parent during this hard time.</p>
+        <p class="h5">Our goal in creating Quarentivities was to build a community of parents, kids, and families to connect and share in activities and fun ideas. While we cannot replace the fun we had growing up, we hope to make it easier for kids to enjoy themselves during these isolating times.</p>
     </div>
+
+    <hr class="mb-5">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header text-center">Site Rules</div>
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">1. Be positive and inclusive.</li>
+                    <li class="list-group-item">2. No harassment or inappropriate conduct.</li>
+                    <li class="list-group-item">3. Do not spam users.</li>
+                    <li class="list-group-item">4. Don't feed the trolls.</li>
+                    <li class="list-group-item">5. Don't post anything illegal.</li>
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <div class="card-header text-center">How to Participate</div>
+
+                <div class="card-body">
+                    <p class="h5">We encourage you and your family to find activities that you find exiting and participate in them together!</p><br>
+
+                    <p class="h5">Share your progress, encourage others, and create your own activities to help build this community online.</p>
+                
+                    <a href="{{ url_for('register') }}" class="card-link text-center">Click Here to Create an Account</a>
+                </div>
+        </div>
+    </div>
+</div>   
+
+<div class="container">
+    <hr class="mb-5">
+    <h2 class="d-flex justify-content-center"> <a href="{{ url_for('login') }}">Login</a>&nbsp;or&nbsp;<a href="{{ url_for('register') }}">Create an Account</a>&nbsp;to See More Activities Like These</h2>
 </div>
+
+{% for activity in activities %}
+	{{ guest_activity_display(activity) }}
+{% endfor %}
+
 {% endblock content %}

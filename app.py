@@ -1,5 +1,4 @@
 from flask import Flask, render_template, url_for, redirect, flash, request, jsonify
-from db import userInfoInquiry, removeLike, getLikes, checkLikeDB, updateSentiments, getActivity, getActivityIDs, getAllActivities, joinActivityDB, loginUser, newUser, testConn, createActivity, getUser, userInfo, getInfo, editInfo, addLike, getActivityUsers, changeProfPic, getPic, firstNameUser, getcomments, getActivityUsers, writecomment,settings
 from forms import LoginForm, RegistrationForm, PostForm, EditForm, ProfileLookupForm, ChangeProfilePicture, CommentForm, securityForm
 from flask_login import LoginManager, login_user, current_user, login_required, UserMixin, logout_user
 from flask_bcrypt import Bcrypt
@@ -12,6 +11,7 @@ import time
 import json
 import secrets
 import gunicorn
+import db
 from textblob import TextBlob
 from base64 import b64encode
 
@@ -34,35 +34,39 @@ class User(UserMixin):
         user = User(id)
         return user
 
+def getProfPic(user_id):
+    picDb = db.getPic(user_id)
+    if(picDb != None):
+        pic = b64encode(picDb[0]).decode('"utf-8"')
+
+    else:
+        pic = None
+    return pic
+
 
 @login_manager.user_loader
 def load_user(id):
     return User.get_user(id)
 
 
-testConn()
+db.testConn()
 
 
 bcrypt = Bcrypt(app)
 
 
-
+@app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html', title='Home')
 
-
-@app.route('/browse', methods=['GET', 'POST'])
-def browse():
-
-    activityList = getAllActivities()
+    activityList = db.getFirstThree()
     activities = []
 
     for activ in activityList:
         image = b64encode(activ[2]).decode('"utf-8"')
-        likes = getLikes(activ[4])  # Changed for likes
+        likes = db.getLikes(activ[4])  # Changed for likes
         if(current_user.is_anonymous == False):
-            likeStatus = checkLikeDB(current_user.id, activ[4])
+            likeStatus = db.checkLikeDB(current_user.id, activ[4])
         else:
             likeStatus = False
         a = {
@@ -78,13 +82,43 @@ def browse():
 
     activities.reverse()
 
-    return render_template('browse.html', activities=activities, title='Welcome')
+    return render_template('home.html', activities=activities, title='Home')
+
+
+@app.route('/browse', methods=['GET', 'POST'])
+def browse():
+
+    activityList = db.getAllActivities()
+    activities = []
+
+    for activ in activityList:
+        image = b64encode(activ[2]).decode('"utf-8"')
+        likes = db.getLikes(activ[4])  # Changed for likes
+        if(current_user.is_anonymous == False):
+            likeStatus = db.checkLikeDB(current_user.id, activ[4])
+        else:
+            likeStatus = False
+        a = {
+            'title': activ[0],
+            'description': activ[1],
+            'image': image,
+            'activity_id': activ[4],
+            'likes': likes,
+            'likeStatus': likeStatus
+
+        }
+        activities.append(a)
+
+    activities.reverse()
+    pic = getProfPic(current_user.id)
+
+    return render_template('browse.html', activities=activities, title='Welcome', pic=pic)
 
 
 @app.route('/activityfeed', methods=['GET', 'POST'])
 @login_required
 def activityfeed():
-    activityIDs = getActivityIDs(current_user.id)
+    activityIDs = db.getActivityIDs(current_user.id)
     activities = []
 
     print("Activity IDs", file=sys.stderr)
@@ -92,15 +126,15 @@ def activityfeed():
     if activityIDs:
         if activityIDs[0]:
             for ids in activityIDs:
-                activ = getActivity(ids[0])
+                activ = db.getActivity(ids[0])
                 if(current_user.is_anonymous == False):
-                    likeStatus = checkLikeDB(current_user.id, activ[4])
+                    likeStatus = db.checkLikeDB(current_user.id, activ[4])
                 else:
                     likeStatus = False
                 print("ACTIV", file=sys.stderr)
                 print(activ[0].decode(), file=sys.stderr)
                 image = b64encode(activ[2]).decode('"utf-8"')
-                likes = getLikes(activ[4])  # Changed for likes
+                likes = db.getLikes(activ[4])  # Changed for likes
 
                 a = {
                     'title': activ[0].decode(),
@@ -114,24 +148,25 @@ def activityfeed():
                 activities.append(a)
 
     activities.reverse()
+    pic = getProfPic(current_user.id)
 
-    return render_template('feed.html', activities=activities, title='Activities')
+    return render_template('feed.html', activities=activities, title='Activities', pic=pic)
 
 
 @app.route('/activity/<int:activity_id>', methods=['GET', 'POST'])
 def activity(activity_id):
-    likeStatus = checkLikeDB(current_user.id, activity_id)
-    activ = getActivity(activity_id)
-    members = getActivityUsers(activity_id)
+    likeStatus = db.checkLikeDB(current_user.id, activity_id)
+    activ = db.getActivity(activity_id)
+    members = db.getActivityUsers(activity_id)
     image = b64encode(activ[2]).decode('"utf-8"')
-    likes = getLikes(activity_id)  # Changed for likes
+    likes = db.getLikes(activity_id)  # Changed for likes
 
     happydisplay = None
-    
-    if activ[8] != 0 :
+
+    if activ[8] != 0:
         num = int(round(((activ[5] * 100) / activ[8]), 2))
         happydisplay = "People are " + str(num) + "% happy with this activity"
-    else :
+    else:
         happydisplay = "Not enough coments to see how happy people are with this activity."
 
     a = {
@@ -140,7 +175,9 @@ def activity(activity_id):
         'image': image,
         'activity_id': activ[4],
         'likes': likes,
-        'happy': happydisplay
+        'happy': happydisplay,
+        'current_id': current_user.id,
+        'creator_id': activ[9].decode()
     }
 
     # Setting the sentiments for the activity
@@ -149,17 +186,17 @@ def activity(activity_id):
     sad = activ[7]
     totalComments = activ[8]
 
-    dbcomments = getcomments(activity_id)
+    dbcomments = db.getcomments(activity_id)
     comments = []
     if dbcomments:
         if dbcomments[0]:
             for comms in dbcomments:
-                fname = firstNameUser(comms[1])
+                fname = db.firstNameUser(comms[1])
                 print("USER ID --------------- Comment", file=sys.stderr)
                 print(comms, file=sys.stderr)
                 print(fname, file=sys.stderr)
                 c = {
-                    'username': str(firstNameUser(comms[1]))[2:-3],
+                    'username': str(db.firstNameUser(comms[1]))[2:-3],
                     'body': comms[2]
                 }
                 comments.append(c)
@@ -187,41 +224,48 @@ def activity(activity_id):
 
         print(sentiment, file=sys.stderr)
 
-        updateSentiments(activity_id, happy, neutral, sad, totalComments)
+        db.updateSentiments(activity_id, happy, neutral, sad, totalComments)
 
         # End Analysis
-        buff = writecomment(current_user.id, activity_id, body)
+        buff = db.writecomment(current_user.id, activity_id, body)
         return redirect(url_for('activity', activity_id=activity_id))
 
     return render_template('activity.html', comments=comments, title='Activity', members=members, form=form, activity=a, likeStatus=likeStatus, likes=likes)
-
 
 @app.route('/newpost', methods=['GET', 'POST'])
 @login_required
 def newpost():
     form = PostForm()
+    print("newpost page", file=sys.stderr)
     if form.validate_on_submit():
+        print("validated", file=sys.stderr)
         title = form.title.data
         description = form.body.data
         image = form.image.data.read()
-        activity_id = createActivity(title, description, image, 0)
+        activity_id = db.createActivity(title, description, image, 0, current_user.id)
         print("Activity ID", file=sys.stderr)
         print(activity_id, file=sys.stderr)
-        joinActivityDB(current_user.id, activity_id)
+        db.joinActivityDB(current_user.id, activity_id)
 
         return redirect(url_for('browse'))
+    
 
     return render_template('newPost.html', title='Post', form=form)
 
-@app.route('/')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
-        hashedPassword = form.password.data
+        unhashedPassword = form.password.data
+        hashedPassword = db.getPassword(email)
 
-        if loginUser(email, hashedPassword):
+        print("PASSWORDS", file=sys.stderr)
+        print(unhashedPassword, file=sys.stderr)
+        print(hashedPassword, file=sys.stderr)
+
+        if bcrypt.check_password_hash(hashedPassword[0].decode(), unhashedPassword):
             signedIn = User(email)
             login_user(signedIn)
             return redirect(url_for('browse'))
@@ -241,10 +285,13 @@ def register():
         firstName = form.firstname.data
         lastName = form.lastname.data
         email = form.email.data
-        hashedPassword = form.password.data
+        password = form.password.data
         username = form.username.data
 
-        newUser(email, hashedPassword, firstName, lastName, username)
+        hashedPassword = bcrypt.generate_password_hash(
+            password).decode('utf-8')
+
+        db.newUser(email, hashedPassword, firstName, lastName, username)
 
         with open('userpass.txt', mode='w') as csvfile:
             writeme = csv.writer(csvfile)
@@ -261,7 +308,7 @@ def register():
 @app.route('/joinactivity/<int:activity_id>', methods=['GET', 'POST'])
 @login_required
 def joinactivity(activity_id):  # joinactivity = server, joinActivity = sql
-    joinActivityDB(current_user.id, activity_id)
+    db.joinActivityDB(current_user.id, activity_id)
     return redirect(url_for('activityfeed'))
 
 
@@ -283,7 +330,7 @@ def searchprofile():
         substringedForm.reverse()
 
         for substr in substringedForm:
-            infoRet = userInfoInquiry(substr)
+            infoRet = db.userInfoInquiry(substr)
             for infoUser in infoRet:
                 if infoUser[0] not in addedUser:
                     addedUser.append(infoUser[0])
@@ -291,17 +338,49 @@ def searchprofile():
 
         print("Returned Info Result ------------", file=sys.stderr)
         print(returnedInfo, file=sys.stderr)
+        pic = getProfPic(current_user.id)
 
-        return render_template('profileinquiry.html', title='search', form=form, returnedInfo=returnedInfo)
+        return render_template('profileinquiry.html', title='search', form=form, returnedInfo=returnedInfo, pic=pic)
+    pic = getProfPic(current_user.id)
 
-    return render_template('profileinquiry.html', title='search', form=form)
+    return render_template('profileinquiry.html', title='search', form=form,pic=pic)
 
 
 @ app.route('/otherprofile/<string:user_id>', methods=['GET', 'POST'])
 @ login_required
 def vprofile(user_id):
-    activityIDs = getActivityIDs(user_id)
-    returnedInfo = userInfo(user_id)
+
+    print(db.checkBlock(user_id, current_user.id), file=sys.stderr)
+
+    # Checks that logged in user is able to see site
+    if (db.checkBlock(user_id, current_user.id)):
+        print("Here", file=sys.stderr)
+        return render_template('404.html'), 404
+
+    blocked = False
+
+    if (db.checkBlock(current_user.id, user_id)):
+        blocked = True
+
+    print(user_id, file=sys.stderr)
+    picDb = db.getPic(user_id)
+    if(picDb != None):
+        profPic = b64encode(picDb[0]).decode('"utf-8"')
+
+    else:
+        profPic = None
+    pic = db.getPic(current_user.id)
+    if(pic != None):
+        pic = b64encode(pic[0]).decode('"utf-8"')
+
+    else:
+        pic = None
+
+
+
+    activityIDs = db.getActivityIDs(user_id)
+    returnedInfo = db.userInfo(user_id)
+
     print("RETURNEDINFO", flush=True)
     print(returnedInfo, flush=True)
     activities = []
@@ -313,7 +392,7 @@ def vprofile(user_id):
     if activityIDs:
         if activityIDs[0]:
             for ids in activityIDs:
-                activ = getActivity(ids[0])
+                activ = db.getActivity(ids[0])
 
                 print("ACTIV", file=sys.stderr)
                 print(activ, file=sys.stderr)
@@ -329,19 +408,18 @@ def vprofile(user_id):
                 activities.append(a)
 
     activities.reverse()
-
-    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo)
+    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo, pic=pic, profPic=profPic, blocked=blocked, user_id=user_id)
 
 
 @ app.route('/profile')
 @ login_required
 def profile():
-    activityIDs = getActivityIDs(current_user.id)
+    activityIDs = db.getActivityIDs(current_user.id)
     activities = []
     if activityIDs:
         if activityIDs[0]:
             for ids in activityIDs:
-                activ = getActivity(ids[0])
+                activ = db.getActivity(ids[0])
                 image = b64encode(activ[2]).decode('"utf-8"')
                 likes = 0  # Change for likes
 
@@ -355,16 +433,15 @@ def profile():
 
     activities.reverse
 
-    i = getInfo(current_user.id)
-
+    i = db.getInfo(current_user.id)
 
     info = {
-        'about':i[0].decode(), 
-        'interests':i[1].decode(), 
-        'location':i[2], 
-        'gender':i[3].decode(), 
-        'email':i[4].decode()}
-    picDb = getPic(current_user.id)
+        'about': i[0].decode(),
+        'interests': i[1].decode(),
+        'location': i[2],
+        'gender': i[3].decode(),
+        'email': i[4].decode()}
+    picDb = db.getPic(current_user.id)
 
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
@@ -373,17 +450,19 @@ def profile():
         pic = None
     return render_template('profile.html', activities=activities, title='Activities', info=info, pic=pic)
 
+
 @ app.route('/profileSettings')
 @ login_required
 def profileSettings():
     print("Current User ID", file=sys.stderr)
     print(current_user.id, file=sys.stderr)
 
-    i = getInfo(current_user.id)
+    i = db.getInfo(current_user.id)
 
-    info = {'about':i[0].decode(), 'interests':i[0].decode(), 'location':i[0], 'gender':i[0], 'email':i[0]}
-    picDb = getPic(current_user.id)
-    print(picDb,file=sys.stderr)
+    info = {'about': i[0].decode(), 'interests': i[0].decode(
+    ), 'location': i[0], 'gender': i[0], 'email': i[0]}
+    picDb = db.getPic(current_user.id)
+    print(picDb, file=sys.stderr)
     if(picDb != None):
         pic = b64encode(picDb[0]).decode('"utf-8"')
 
@@ -391,69 +470,78 @@ def profileSettings():
         pic = None
     return render_template('settings.html', info=info, pic=pic)
 
-@app.route('/editProfile', methods = ['GET', 'POST'])
+
+@app.route('/editProfile', methods=['GET', 'POST'])
 @login_required
-def editinfo():
+def editInfo():
     form = EditForm()
 
     if form.validate_on_submit():
-        print(current_user.id,file=sys.stderr)
+        print(current_user.id, file=sys.stderr)
         about = form.about.data
         interests = form.interests.data
         location = form.location.data
         gender = form.gender.data
-        i = getInfo(current_user.id)
+        i = db.getInfo(current_user.id)
         if(about == ""):
             about = i[0][0]
         if(interests == ""):
             interests = i[0][1]
-        if(location == ""):
-            location = i[0][2]
-        if(gender == ""):
-            gender = i[0][3]
-        print(about,file=sys.stderr)
+        # if(location == ""):
+        #     location = i[0][2]
+        # if(gender == ""):
+        #     gender = i[0][3]
+        print(about, file=sys.stderr)
         print(interests, file=sys.stderr)
 
-
-        editInfo(current_user.id, about, interests, location, gender)
-        print(form.errors,file=sys.stderr)
+        db.editInfo(current_user.id, about, interests, location, gender)
+        print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
-    print(form.errors,file=sys.stderr)
-    return render_template('editProfile.html', title = 'Edit', form=form)
 
-@app.route('/securitySettings', methods = ['GET', 'POST'])
+    print(form.errors,file=sys.stderr)
+    pic = getProfPic(current_user.id)
+
+    return render_template('editProfile.html', title = 'Edit', form=form,pic=pic)
+
+@app.route('/securitySettings', methods=['GET', 'POST'])
 @login_required
 def editSettings():
     form = securityForm()
 
     if form.validate_on_submit():
-        print(current_user.id,file=sys.stderr)
+        print(current_user.id, file=sys.stderr)
         username = form.username.data
         password = form.password.data
-        i = getInfo(current_user.id)
+        i = db.getInfo(current_user.id)
         if(username == ""):
             username = i[0][5]
         if(password == ""):
             password = i[0][6]
-        settings(username, password, current_user.id)
-        print(form.errors,file=sys.stderr)
+        else:
+            hashedPassword = bcrypt.generate_password_hash(password).decode('utf-8')
+        db.settings(username, hashedPassword, current_user.id)
+        print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
+
     print(form.errors,file=sys.stderr)
-    return render_template('securitySettings.html', title = 'Edit', form=form)
+    pic = getProfPic(current_user.id)
+
+    return render_template('securitySettings.html', title = 'Edit', form=form,pic=pic)
 
 
-
-@app.route('/changePicture', methods = ['GET', 'POST'])
+@app.route('/changePicture', methods=['GET', 'POST'])
 @login_required
 def editProfPic():
     form = ChangeProfilePicture()
     if form.validate_on_submit():
         picture = form.picture.data.read()
-        i = changeProfPic(current_user.id, picture)
-        print(i,file=sys.stderr)
+        i = db.changeProfPic(current_user.id, picture)
+        print(i, file=sys.stderr)
         return redirect(url_for('profile'))
+    pic = getProfPic(current_user.id)
 
-    return render_template('changePicture.html', title = 'Profile Picture', form=form)
+
+    return render_template('changePicture.html', title = 'Profile Picture', form=form,pic=pic)
 
 
 @app.route('/logout')
@@ -466,20 +554,45 @@ def logout():
 @app.route('/likepost/<int:activity_id>', methods=['GET', 'POST'])
 @login_required
 def likepost(activity_id):
-    activ = getActivity(activity_id)
+    activ = db.getActivity(activity_id)
     title = activ[0]
-    addLike(title, current_user.id, activity_id)
+    db.addLike(title, current_user.id, activity_id)
     return('', 204)
 
 
 @app.route('/unlikepost/<int:activity_id>', methods=['GET', 'POST'])
 @login_required
 def unlikepost(activity_id):
-    activ = getActivity(activity_id)
+    activ = db.getActivity(activity_id)
     print(activ[4], file=sys.stderr)
-    removeLike(current_user.id, activ[4])
+    db.removeLike(current_user.id, activ[4])
     return('', 204)
 
+@app.route('/deleteactivity/<int:activity_id>', methods=['GET', 'POST'])
+@login_required
+def deleteactivity(activity_id):
+    owner = db.getActivity(activity_id)
+    if (current_user.id == owner[9].decode()): # Should verify that the owner is the same. --------- VERIFY USING PRINT
+        db.deleteActivity(activity_id)
+    return redirect(url_for('browse'))
+
+@app.route('/blockuser/<string:user_id>', methods=['GET', 'POST'])
+@login_required
+def blockuser(user_id):
+    db.blockUser(current_user.id, user_id)
+    return redirect(url_for('vprofile', user_id=user_id))
+
+@app.route('/unblockuser/<string:user_id>', methods=['GET', 'POST'])
+@login_required
+def unblockuser(user_id):
+    db.unblockUser(current_user.id, user_id)
+    return redirect(url_for('vprofile', user_id=user_id))
+
+@app.errorhandler(404)
+def page_not_found(error404):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)
+
+# Testing dev branch merge

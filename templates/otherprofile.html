@@ -4,10 +4,19 @@
 
 <div class="float-left" style="height: 100%; background: lightgray; width: 15rem">
     <h5>
+        <img src="data:;base64,{{ profPic }}" class="card-img">
         {{ returnedInfo[2]}} {{ returnedInfo[3]}} <br> <br>
         About: {{ returnedInfo[5]}} <br> <br>
         Interests: {{ returnedInfo[6]}} <br>
     </h5>
+    <!-- Insert blocking button link here -->
+    {% if blocked == true%}
+    <a href="{{ url_for('unblockuser', user_id=user_id) }}" type="button"
+                    class="btn nav_button_secondary btn-secondary btn-xs" style="border: .5px solid black">Unblock User</a>
+    {% else %}
+    <a href="{{ url_for('blockuser', user_id=user_id) }}" type="button"
+                    class="btn nav_button_secondary btn-secondary btn-xs" style="border: .5px solid black">Block User</a>
+    {% endif %}
 </div>
 
 <div class="container">

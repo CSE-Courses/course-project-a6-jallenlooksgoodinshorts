@@ -27,18 +27,18 @@ class ProfileLookupForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     body = TextAreaField('Body', validators=[DataRequired()])
-    image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg'])])
+    image = FileField('Image', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg','.jpg','.jpeg'])])
     submit = SubmitField('Create Activity')
 
 class CommentForm(FlaskForm):
     comment = TextAreaField('Comment', validators=[InputRequired()])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Comment')
     
 class EditForm(FlaskForm):
     location = StringField('Location')
     gender = StringField('Gender')
-    about = StringField('About')
-    interests = StringField('Interests')
+    about = StringField('About', validators=[DataRequired()])
+    interests = StringField('Interests', validators=[DataRequired()])
     submit = SubmitField('Edit Info')
 
 class ChangeProfilePicture(FlaskForm):

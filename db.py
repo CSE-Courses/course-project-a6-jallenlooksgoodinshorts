@@ -221,13 +221,13 @@ def firstNameUser(user_id):
         return False
 
 
-def createActivity(title, description, image, likes):  # updated for likes
-    inputValues = "INSERT INTO activities (title, description, image, likes) VALUES(%s,%s,%s,%s);"
+def createActivity(title, description, image, likes, creator):  # updated for likes
+    inputValues = "INSERT INTO activities (title, description, image, likes, creator_id) VALUES(%s,%s,%s,%s,%s);"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
         statement.execute(inputValues, (title, description,
-                                        image, likes))  # updated for likes
+                                        image, likes, creator,))  # updated for likes
         conn.commit()
         rs = statement.lastrowid
 
@@ -290,7 +290,7 @@ def getAllActivities():
 
 
 def getActivity(activity_id):
-    inputCommand = "SELECT title, description, image, likes, activity_id, happy, neutral, sad, totalcomments FROM activities WHERE activity_id = (%s)"
+    inputCommand = "SELECT title, description, image, likes, activity_id, happy, neutral, sad, totalcomments, creator_id FROM activities WHERE activity_id = (%s)"
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
@@ -716,12 +716,25 @@ def getLikes(activity_id):
 
 def deleteActivity(activity_id):
     inputCommand = "DELETE FROM activities WHERE activity_id = (%s)"
+    inputCommand2 = "DELETE FROM activitymembers WHERE activity_id = (%s)"
+    inputCommand3 = "DELETE FROM activitylikes WHERE activity_id = (%s)"
+    inputCommand4 = "DELETE FROM comments WHERE activity_id = (%s)"
 
     try:
         conn = connect()
         statement = conn.cursor(prepared=True)
         statement.execute(inputCommand, (activity_id,))
         conn.commit()
+
+        statement.execute(inputCommand2, (activity_id,))
+        conn.commit()
+
+        statement.execute(inputCommand3, (activity_id,))
+        conn.commit()
+
+        statement.execute(inputCommand4, (activity_id,))
+        conn.commit()
+
 
         statement.close()
         conn.close()

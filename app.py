@@ -558,6 +558,9 @@ def unlikepost(activity_id):
 @app.route('/deleteactivity/<int:activity_id>', methods=['GET', 'POST'])
 @login_required
 def deleteactivity(activity_id):
+    owner = db.getActivity(activity_id)
+    if (current_user.id == owner[9].decode()): # Should verify that the owner is the same. --------- VERIFY USING PRINT
+        db.deleteActivity(activity_id)
     return redirect(url_for('browse'))
 
 if __name__ == '__main__':

@@ -517,7 +517,9 @@ def editSettings():
             username = i[0][5]
         if(password == ""):
             password = i[0][6]
-        db.settings(username, password, current_user.id)
+        else:
+            hashedPassword = bcrypt.generate_password_hash(password).decode('utf-8')
+        db.settings(username, hashedPassword, current_user.id)
         print(form.errors, file=sys.stderr)
         return redirect(url_for('profile'))
 

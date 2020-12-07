@@ -487,10 +487,10 @@ def editInfo():
             about = i[0][0]
         if(interests == ""):
             interests = i[0][1]
-        if(location == ""):
-            location = i[0][2]
-        if(gender == ""):
-            gender = i[0][3]
+        # if(location == ""):
+        #     location = i[0][2]
+        # if(gender == ""):
+        #     gender = i[0][3]
         print(about, file=sys.stderr)
         print(interests, file=sys.stderr)
 

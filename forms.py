@@ -37,8 +37,8 @@ class CommentForm(FlaskForm):
 class EditForm(FlaskForm):
     location = StringField('Location')
     gender = StringField('Gender')
-    about = StringField('About')
-    interests = StringField('Interests')
+    about = StringField('About', validators=[DataRequired()])
+    interests = StringField('Interests', validators=[DataRequired()])
     submit = SubmitField('Edit Info')
 
 class ChangeProfilePicture(FlaskForm):

@@ -350,6 +350,17 @@ def searchprofile():
 @ login_required
 def vprofile(user_id):
 
+    print(db.checkBlock(user_id, current_user.id), file=sys.stderr)
+
+    # Checks that logged in user is able to see site
+    if (db.checkBlock(user_id, current_user.id)):
+        print("Here", file=sys.stderr)
+        return render_template('404.html'), 404
+
+    blocked = False
+
+    if (db.checkBlock(current_user.id, user_id)):
+        blocked = True
 
     print(user_id, file=sys.stderr)
     picDb = db.getPic(user_id)
@@ -397,7 +408,7 @@ def vprofile(user_id):
                 activities.append(a)
 
     activities.reverse()
-    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo, pic=pic, profPic=profPic)
+    return render_template('otherprofile.html', activities=activities, title='Activities', returnedInfo=returnedInfo, pic=pic, profPic=profPic, blocked=blocked, user_id=user_id)
 
 
 @ app.route('/profile')
@@ -562,6 +573,22 @@ def deleteactivity(activity_id):
     if (current_user.id == owner[9].decode()): # Should verify that the owner is the same. --------- VERIFY USING PRINT
         db.deleteActivity(activity_id)
     return redirect(url_for('browse'))
+
+@app.route('/blockuser/<string:user_id>', methods=['GET', 'POST'])
+@login_required
+def blockuser(user_id):
+    db.blockUser(current_user.id, user_id)
+    return redirect(url_for('vprofile', user_id=user_id))
+
+@app.route('/unblockuser/<string:user_id>', methods=['GET', 'POST'])
+@login_required
+def unblockuser(user_id):
+    db.unblockUser(current_user.id, user_id)
+    return redirect(url_for('vprofile', user_id=user_id))
+
+@app.errorhandler(404)
+def page_not_found(error404):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

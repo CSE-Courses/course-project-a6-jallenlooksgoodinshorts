@@ -127,25 +127,29 @@ def activityfeed():
         if activityIDs[0]:
             for ids in activityIDs:
                 activ = db.getActivity(ids[0])
-                if(current_user.is_anonymous == False):
-                    likeStatus = db.checkLikeDB(current_user.id, activ[4])
-                else:
-                    likeStatus = False
-                print("ACTIV", file=sys.stderr)
-                print(activ[0].decode(), file=sys.stderr)
-                image = b64encode(activ[2]).decode('"utf-8"')
-                likes = db.getLikes(activ[4])  # Changed for likes
+                if (activ != None):
 
-                a = {
-                    'title': activ[0].decode(),
-                    'description': activ[1].decode(),
-                    'image': image,
-                    'activity_id': activ[4],
-                    'likes': likes,
-                    'likeStatus': likeStatus
-                }
+                    if(current_user.is_anonymous == False):
+                        if(activ!=None):
+                            likeStatus = db.checkLikeDB(current_user.id, activ[4])
+                        else:
+                            likeStatus = False
+                    else:
+                        likeStatus = False
+                    print("ACTIV", file=sys.stderr)
+                    image = b64encode(activ[2]).decode('"utf-8"')
+                    likes = db.getLikes(activ[4])  # Changed for likes
 
-                activities.append(a)
+                    a = {
+                        'title': activ[0].decode(),
+                        'description': activ[1].decode(),
+                        'image': image,
+                        'activity_id': activ[4],
+                        'likes': likes,
+                        'likeStatus': likeStatus
+                    }
+
+                    activities.append(a)
 
     activities.reverse()
     pic = getProfPic(current_user.id)
@@ -420,18 +424,22 @@ def profile():
         if activityIDs[0]:
             for ids in activityIDs:
                 activ = db.getActivity(ids[0])
-                image = b64encode(activ[2]).decode('"utf-8"')
-                likes = 0  # Change for likes
+                if(activ!=None):
+                    image = b64encode(activ[2]).decode('"utf-8"')
 
-                a = {
-                    'title': activ[0].decode(),
-                    'description': activ[1].decode(),
-                    'image': image,
-                    'activity_id': activ[4]
-                }
-                activities.append(a)
+                    likes = 0  # Change for likes
 
-    activities.reverse
+                    a = {
+                        'title': activ[0].decode(),
+                        'description': activ[1].decode(),
+                        'image': image,
+                        'activity_id': activ[4]
+                    }
+                    activities.append(a)
+
+
+
+        activities.reverse
 
     i = db.getInfo(current_user.id)
 
